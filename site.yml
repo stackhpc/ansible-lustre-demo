@@ -1,5 +1,4 @@
-- hosts: all
-  tags: prereq
+- hosts: servers
   become: yes
   tasks:
     - name: Disable SELinux
@@ -12,10 +11,6 @@
       import_role:
         name: ansible-role-linux-kernel
 
-- hosts: servers
-  tags: servers
-  become: yes
-  tasks:
     - name: Enumerate devices
       lsbkl:
       register: lsblk
@@ -27,6 +22,33 @@
           - lsblk.devices['45da89db-6c07-461e-a'] == '/dev/sdb' # MGS
           - lsblk.devices['5394d5fe-4dda-44a5-a'] == '/dev/sdc' # MDT
           - lsblk.devices['c51788e8-9660-4487-b'] == '/dev/sdd' # OST
+    
     - name: Install lustre server
       import_role:
         name: ansible-role-lustre
+
+- hosts: clients
+  tags: clients
+  become: yes
+  tasks:
+    - name: Gather facts from MGS
+      setup:
+      delegate_to: "{{ groups['servers'][0] }}"
+      delegate_facts: True
+    
+    - name: Install lustre client
+      import_role:
+        name: ansible-role-lustre
+    
+    - name: Ensure mount point exists
+      file:
+        path: "/mnt/{{ lustre_fsname}}"
+        state: directory
+        # TODO owner, mode
+
+    - name: Mount lustre fileysystem
+      mount:
+        src: "{{ hostvars[groups['servers'][0]]['ansible_facts']['eth0']['ipv4']['address'] }}@tcp1:/{{ lustre_fsname }}"
+        path: /mnt/lustre
+        fstype: lustre
+        state: "{{ client_mount_state | default('mounted') }}"

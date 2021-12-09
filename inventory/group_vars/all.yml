@@ -1,5 +1,8 @@
+# --- ansible-role-lustre ---
+lustre_version: '2.12.7'
+lustre_fsname: lustre
 lustre_lnet_lnetctl_networks:
-  'tcp1':                                                                
+  'tcp1':
     - ip: "{{ hostvars[inventory_hostname]['ansible_facts']['eth0']['ipv4']['address'] }}"
       interfaces:
          - 'eth0'

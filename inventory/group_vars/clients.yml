@@ -1,0 +1,3 @@
+# --- ansible-role-lustre ---
+lustre_install_type: client
+
