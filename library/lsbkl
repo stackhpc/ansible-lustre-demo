@@ -1,0 +1,23 @@
+#!/usr/bin/python
+
+# Copyright: (c) 2021, StackHPC
+# Apache 2 License
+
+import json
+
+from ansible.module_utils.basic import AnsibleModule
+
+def run_module():
+    module_args = dict()
+    module = AnsibleModule(argument_spec=module_args, supports_check_mode=True)
+    result = {"changed": False}
+    _, stdout, _ = module.run_command("lsblk --noheadings --paths --list -o name,serial", check_rc=True)
+    defns = [line.split() for line in stdout.splitlines()] # line is e.g. `/dev/sda  drive-scsi0-0-0-0`, but the serial MAY be missing
+    result['devices'] = dict((dev[1], dev[0]) for dev in defns if len(dev) == 2)
+    module.exit_json(**result)
+
+def main():
+    run_module()
+
+if __name__ == '__main__':
+    main()

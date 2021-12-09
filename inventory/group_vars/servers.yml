@@ -1,15 +1,28 @@
-lustre_install_type: patchless-ldiskfs-server
+# --- ansible-role-lustre ---
+lustre_install_type: server
+lustre_version: '2.12.7'
+lustre_manage_repo: false
 lustre_format_disks: true
 lustre_format_mgs:
-  device: /dev/sdd
-  # servicenode: "{{ hostvars['stackhpc-lustre-1'].ansible_host }}@tcp1"
-  force: yes
+  device: /dev/sdb
 lustre_format_mdts:
   - device: /dev/sdc
     index: 0
     mgs_nodes: "{{ hostvars['stackhpc-lustre-1'].ansible_host }}@tcp1"
 lustre_format_osts:
-  - device: /dev/sdb
+  - device: /dev/sdd
     index: 0
     mgs_nodes: "{{ hostvars['stackhpc-lustre-1'].ansible_host }}@tcp1"
+    # force: yes
 lustre_mount_disks: true
+
+# --- ansible-role-linux-kernel ---
+kernel_version: 3.10.0-1160.25.1.el7_lustre
+kernel_manage_custom_repo: true
+kernel_custom_repo_name: lustre-server
+kernel_custom_repo_baseurl: "https://downloads.whamcloud.com/public/lustre/lustre-{{ lustre_version }}/el{{ ansible_distribution_major_version }}/{{ lustre_install_type }}"
+kernel_custom_repo_description: "Lustre Server {{ lustre_version }} Yum Repository for {{ ansible_os_family }} {{ ansible_distribution_major_version }} - {{ ansible_architecture }}"
+kernel_custom_repo_enabled: true
+kernel_custom_repo_gpgcheck: false
+install_kernel_debuginfo: true
+install_kernel_tools: false

@@ -1,3 +1,4 @@
 ---
 roles:
 - src: git+git@github.com:stackhpc/ansible-role-lustre.git
+- src: git+git@github.com:mjrasobarnett/ansible-role-linux-kernel.git
