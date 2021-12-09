@@ -1,0 +1,17 @@
+#!/usr/bin/env python3
+
+import sys, subprocess, json, os
+
+if __name__ == '__main__':
+    args = sys.argv[1:]
+    inventory_cmd = ['ansible-inventory'] + args
+    print('running', subprocess.list2cmdline(inventory_cmd))
+    proc = subprocess.run(inventory_cmd, universal_newlines=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    try:
+        host_vars = json.loads(proc.stdout)
+    except Exception:
+        print(proc.stdout)
+        raise
+    cmd = ['ssh'] + host_vars['ansible_ssh_common_args'].split() + [host_vars['ansible_host']]
+    print('Running', subprocess.list2cmdline(cmd))
+    os.execvp(cmd[0], cmd)
