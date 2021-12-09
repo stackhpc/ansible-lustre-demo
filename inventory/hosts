@@ -1,0 +1,11 @@
+[all:vars]
+lustre_version=2.12.7
+
+[servers]
+stackhpc-lustre-1 ansible_host=192.168.99.166
+
+[clients]
+stackhpc-lustre-2 ansible_host=192.168.99.150
+
+[clients:vars]
+lustre_install_type=client

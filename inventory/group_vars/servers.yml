@@ -1,0 +1,15 @@
+lustre_install_type: patchless-ldiskfs-server
+lustre_format_disks: true
+lustre_format_mgs:
+  device: /dev/sdd
+  # servicenode: "{{ hostvars['stackhpc-lustre-1'].ansible_host }}@tcp1"
+  force: yes
+lustre_format_mdts:
+  - device: /dev/sdc
+    index: 0
+    mgs_nodes: "{{ hostvars['stackhpc-lustre-1'].ansible_host }}@tcp1"
+lustre_format_osts:
+  - device: /dev/sdb
+    index: 0
+    mgs_nodes: "{{ hostvars['stackhpc-lustre-1'].ansible_host }}@tcp1"
+lustre_mount_disks: true

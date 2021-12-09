@@ -1,0 +1,7 @@
+- hosts: all
+  become: no
+  gather_facts: no
+  tasks:
+    - command: "openstack server rebuild {{ inventory_hostname }}"
+      delegate_to: localhost
+    - wait_for_connection:

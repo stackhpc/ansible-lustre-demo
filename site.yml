@@ -1,0 +1,44 @@
+- hosts: all
+  tags: prereq
+  become: yes
+  tasks:
+    - name: Install latest kernel
+      yum:
+        name: kernel
+        state: latest
+      register: kernel_install
+    
+    - name: Install kernel-* packages
+      yum:
+        name: "{{ kernel_pkgs }}"
+        state: latest
+      vars:
+        kernel_pkgs:
+          - kernel-devel
+          - kernel-headers
+          - kernel-tools
+          - kernel-tools-libs
+          - kernel-tools-libs-devel
+    
+    - name: Disable SELinux
+      ansible.posix.selinux:
+        state: disabled
+      register: selinux
+    
+    - name: Reboot
+      reboot:
+      when: kernel_install.changed or selinux.reboot_required
+
+- hosts: servers
+  tags: servers
+  become: yes
+  tasks:
+    - name: Enumerate devices
+      lsbkl:
+      register: lsblk
+      changed_when: false
+    - debug:
+        var: lsblk
+    - name: Install lustre server
+      import_role:
+        name: ansible-role-lustre
