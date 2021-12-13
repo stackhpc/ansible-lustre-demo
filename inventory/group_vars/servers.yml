@@ -25,3 +25,20 @@ kernel_custom_repo_enabled: true
 kernel_custom_repo_gpgcheck: false
 install_kernel_debuginfo: true
 install_kernel_tools: false
+
+lustre_nodemaps:
+  - name: test
+    # admin_nodemap: true/[false]
+    # audit_mode: [true]/false
+    # deny_unknown: true/[false]
+    # fileset: ''
+    # idmaps: []
+      # - client_id:
+      #   fs_id:
+      #   idtype:
+    ranges:
+      - start_nid: "{{ hostvars['stackhpc-lustre-2']['ansible_host'] }}@{{ hostvars['stackhpc-lustre-2']['lustre_lnet_lnetctl_networks'] | first }}"
+        end_nid: "{{ hostvars['stackhpc-lustre-2']['ansible_host'] }}@{{ hostvars['stackhpc-lustre-2']['lustre_lnet_lnetctl_networks'] | first }}"
+# squash_gid: 99
+# squash_uid: 99
+# trusted_nodemap: true/[false]
