@@ -1,4 +1,5 @@
 - hosts: servers
+  tags: servers
   become: yes
   tasks:
     - name: Disable SELinux
