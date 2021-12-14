@@ -1,0 +1,8 @@
+cluster_name = "stackhpc"
+image_name = "CentOS7-2009"
+flavor_name = "vm.v1.small"
+key_pair = "centos_stackhpc-ansible"
+network_name = "lustre-stackhpc"
+mgs_volume_id = "45da89db-6c07-461e-a8d4-e79ac03093bd"
+mdt_volume_id = "5394d5fe-4dda-44a5-a8dc-0aa2db3ead64"
+ost_volume_id = "c51788e8-9660-4487-bc86-d9ea1c796c43"
