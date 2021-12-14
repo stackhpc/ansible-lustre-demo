@@ -41,7 +41,7 @@ terraform init
     terraform apply
     ```
 
-As well as creating the VMs this will also create `inventory/hosts` defining these.
+As well as creating the VMs this will also create an ansible inventory `inventory/hosts`. Note the volume attachments are done at VM creation time to try to to keep device paths (e.g. `/dev/sda`) consistent across boots. Device ordering is not guaranteed though, so in production the appropriate device should be located using the OpenStack volume ID which is exposed to the VM as the device serial number.
 
 # Install and configure Lustre
 ```
