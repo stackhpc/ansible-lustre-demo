@@ -7,11 +7,11 @@ lustre_format_mgs:
 lustre_format_mdts:
   - device: /dev/sdc
     index: 0
-    mgs_nodes: "{{ hostvars['stackhpc-lustre-1'].ansible_host }}@tcp1"
+    mgs_nodes: "{{ hostvars['stackhpc-server'].ansible_host }}@tcp1"
 lustre_format_osts:
   - device: /dev/sdd
     index: 0
-    mgs_nodes: "{{ hostvars['stackhpc-lustre-1'].ansible_host }}@tcp1"
+    mgs_nodes: "{{ hostvars['stackhpc-server'].ansible_host }}@tcp1"
     # force: yes
 lustre_mount_disks: true
 
@@ -37,8 +37,8 @@ lustre_nodemaps:
       #   fs_id:
       #   idtype:
     ranges:
-      - start_nid: "{{ hostvars['stackhpc-lustre-2']['ansible_host'] }}@{{ hostvars['stackhpc-lustre-2']['lustre_lnet_lnetctl_networks'] | first }}"
-        end_nid: "{{ hostvars['stackhpc-lustre-2']['ansible_host'] }}@{{ hostvars['stackhpc-lustre-2']['lustre_lnet_lnetctl_networks'] | first }}"
+      - start_nid: "{{ hostvars['stackhpc-client-1']['ansible_host'] }}@{{ hostvars['stackhpc-client-1']['lustre_lnet_lnetctl_networks'] | first }}"
+        end_nid: "{{ hostvars['stackhpc-client-2']['ansible_host'] }}@{{ hostvars['stackhpc-client-2']['lustre_lnet_lnetctl_networks'] | first }}"
 # squash_gid: 99
 # squash_uid: 99
 # trusted_nodemap: true/[false]
