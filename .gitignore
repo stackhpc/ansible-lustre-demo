@@ -2,3 +2,4 @@ venv/
 roles/ansible-role-lustre/
 roles/ansible-role-linux-kernel/
 inventory/hosts
+terraform/terraform.tfstate*

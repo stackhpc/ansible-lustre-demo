@@ -8,7 +8,8 @@ terraform {
 }
 
 variable "cluster_name" {}
-variable "image_name" {}
+variable "server_image_name" {}
+variable "client_image_name" {}
 variable "flavor_name" {}
 variable "key_pair" {}
 variable "network_name" {}
@@ -20,14 +21,14 @@ variable "clients" {
     default = ["client-1", "client-2"]
 }
 
-data "openstack_images_image_v2" "image" {
-    name = var.image_name
+data "openstack_images_image_v2" "server_image" {
+    name = var.server_image_name
 }
 
 resource "openstack_compute_instance_v2" "server" {
 
     name = "${var.cluster_name}-server"
-    image_name = var.image_name
+    image_name = var.server_image_name
     flavor_name = var.flavor_name
     key_pair = var.key_pair
     config_drive = true
@@ -40,7 +41,7 @@ resource "openstack_compute_instance_v2" "server" {
 
     # have to specify ephemeral disk if specifying volumes here too:
     block_device {
-        uuid = data.openstack_images_image_v2.image.id
+        uuid = data.openstack_images_image_v2.server_image.id
         source_type  = "image"
         destination_type = "local"
         boot_index = 0
@@ -77,7 +78,7 @@ resource "openstack_compute_instance_v2" "clients" {
   
   for_each = toset(var.clients)
   name = "${var.cluster_name}-${each.key}"
-  image_name = var.image_name
+  image_name = var.client_image_name
   flavor_name = var.flavor_name
   key_pair = var.key_pair
   config_drive = true

@@ -1,3 +1,6 @@
+# -- general ---
+ansible_user: centos
+
 # --- ansible-role-lustre ---
 lustre_install_type: server
 lustre_manage_repo: false
@@ -16,8 +19,9 @@ lustre_format_osts:
 lustre_mount_disks: true
 
 # --- ansible-role-linux-kernel ---
-kernel_version: 3.10.0-1160.25.1.el7_lustre
-kernel_manage_custom_repo: true
+# These are only required when using lustre_install_type: server (i.e. patchless server or client don't require them)
+kernel_version: 3.10.0-1160.49.1.el7_lustre # Must be availble in the appropriate whamcloud repo (see below) for the above lustre version
+kernel_manage_custom_repo: "{{ true if lustre_install_type == 'server' }}"
 kernel_custom_repo_name: lustre-server
 kernel_custom_repo_baseurl: "https://downloads.whamcloud.com/public/lustre/lustre-{{ lustre_version }}/el{{ ansible_distribution_major_version }}/{{ lustre_install_type }}"
 kernel_custom_repo_description: "Lustre Server {{ lustre_version }} Yum Repository for {{ ansible_os_family }} {{ ansible_distribution_major_version }} - {{ ansible_architecture }}"

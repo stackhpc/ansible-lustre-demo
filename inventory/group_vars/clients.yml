@@ -1,3 +1,5 @@
+# -- general ---
+ansible_user: rocky
+
 # --- ansible-role-lustre ---
 lustre_install_type: client
-

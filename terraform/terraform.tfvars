@@ -1,5 +1,6 @@
 cluster_name = "stackhpc"
-image_name = "CentOS7-2009"
+server_image_name = "CentOS7-2009"
+client_image_name = "Rocky-8-GenericCloud-8.5-20211114.2.x86_64"
 flavor_name = "vm.v1.small"
 key_pair = "centos_stackhpc-ansible"
 network_name = "lustre-stackhpc"

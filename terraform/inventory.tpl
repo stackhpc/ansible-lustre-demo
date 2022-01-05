@@ -1,5 +1,4 @@
 [all:vars]
-ansible_user=centos
 ansible_ssh_common_args= '-o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no'
 
 [servers]
