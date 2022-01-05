@@ -2,16 +2,6 @@
   tags: servers
   become: yes
   tasks:
-    - name: Disable SELinux
-      ansible.posix.selinux:
-        state: disabled
-      register: selinux
-    # kernel install reboots anyway
-    
-    - name: Install patched kernels for lustre
-      import_role:
-        name: ansible-role-linux-kernel
-
     - name: Enumerate devices
       lsbkl:
       register: lsblk
@@ -20,9 +10,38 @@
         var: lsblk
     - assert:
         that:
-          - lsblk.devices['45da89db-6c07-461e-a'] == '/dev/sdb' # MGS
+          - lsblk.devices['45da89db-6c07-461e-a'] == '/dev/sdb' # MGS (NB: under EL8 these are vd*)
           - lsblk.devices['5394d5fe-4dda-44a5-a'] == '/dev/sdc' # MDT
           - lsblk.devices['c51788e8-9660-4487-b'] == '/dev/sdd' # OST
+
+    - name: Disable SELinux
+      ansible.posix.selinux:
+        state: disabled
+      register: selinux
+    
+    - name: Install patched kernels for lustre
+      import_role:
+        name: ansible-role-linux-kernel
+      when: lustre_install_type == 'server'
+    
+    - name: Install latest kernel packages
+      yum:
+        name: "{{ kernel_pkgs }}"
+        state: latest
+      when: lustre_install_type == 'patchless-ldiskfs-server'
+      vars:
+        kernel_pkgs:
+          - kernel
+          - kernel-devel
+          - kernel-headers
+          - kernel-tools
+          - kernel-tools-libs
+          - kernel-tools-libs-devel
+      register: kernel_install
+      
+    - name: Reboot
+      reboot:
+      when: kernel_install.changed | default('false') or selinux.reboot_required
     
     - name: Install lustre server
       import_role:
