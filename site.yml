@@ -2,18 +2,6 @@
   tags: servers
   become: yes
   tasks:
-    - name: Enumerate devices
-      lsbkl:
-      register: lsblk
-      changed_when: false
-    - debug:
-        var: lsblk
-    - assert:
-        that:
-          - lsblk.devices['45da89db-6c07-461e-a'] == '/dev/sdb' # MGS (NB: under EL8 these are vd*)
-          - lsblk.devices['5394d5fe-4dda-44a5-a'] == '/dev/sdc' # MDT
-          - lsblk.devices['c51788e8-9660-4487-b'] == '/dev/sdd' # OST
-
     - name: Disable SELinux
       ansible.posix.selinux:
         state: disabled
@@ -43,6 +31,36 @@
       reboot:
       when: kernel_install.changed | default('false') or selinux.reboot_required
     
+    - name: Update facts after (possible) reboot
+      setup:
+
+    - name: Enumerate block devices
+      command: "lsblk --noheadings --list --paths --output serial,name"
+      register: _lsblk
+      changed_when: false
+
+    - name: Map device ids to paths
+      set_fact:
+        _ldiskfs_devices: "{{ dict(_lsblk.stdout_lines | map('regex_replace', '^\\s+\\S+', '') | reject('eq', '') | map('split')) }}" # omits devices without a serial
+
+    - name: Add device ids to lustre_format_mgs
+      set_fact:
+        lustre_format_mgs: "{{ lustre_format_mgs | add_device_ids(_ldiskfs_devices) }}"
+      when:
+        - lustre_format_mgs is defined
+
+    - name: Add device ids to lustre_format_mdts
+      set_fact:
+        lustre_format_mdts: "{{ lustre_format_mdts | map('add_device_ids', _ldiskfs_devices) }}"
+      when:
+        - lustre_format_mdts is defined
+
+    - name: Add device ids to lustre_format_osts
+      set_fact:
+        lustre_format_osts: "{{ lustre_format_osts | map('add_device_ids', _ldiskfs_devices) }}"
+      when:
+        - lustre_format_osts is defined
+
     - name: Install lustre server
       import_role:
         name: ansible-role-lustre
@@ -53,12 +71,14 @@
         cmd: lctl list_nids
       register: _lctl_nids
       failed_when: (_lctl_nids.rc != 0) or ('@' not in _lctl_nids.stdout)
+      changed_when: false
 
     - name: List lustre devices
       tags: checks
       command:
         cmd: lctl dl
       register: _lctl_dl
+      changed_when: false
     
     - name: Assert server components running
       tags: checks
