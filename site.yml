@@ -35,31 +35,14 @@
       setup:
 
     - name: Enumerate block devices
+      # Note this is done AFTER the reboot as that might reorder devices
       command: "lsblk --noheadings --list --paths --output serial,name"
       register: _lsblk
       changed_when: false
 
     - name: Map device ids to paths
       set_fact:
-        _ldiskfs_devices: "{{ dict(_lsblk.stdout_lines | map('regex_replace', '^\\s+\\S+', '') | reject('eq', '') | map('split')) }}" # omits devices without a serial
-
-    - name: Add device ids to lustre_format_mgs
-      set_fact:
-        lustre_format_mgs: "{{ lustre_format_mgs | add_device_ids(_ldiskfs_devices) }}"
-      when:
-        - lustre_format_mgs is defined
-
-    - name: Add device ids to lustre_format_mdts
-      set_fact:
-        lustre_format_mdts: "{{ lustre_format_mdts | map('add_device_ids', _ldiskfs_devices) }}"
-      when:
-        - lustre_format_mdts is defined
-
-    - name: Add device ids to lustre_format_osts
-      set_fact:
-        lustre_format_osts: "{{ lustre_format_osts | map('add_device_ids', _ldiskfs_devices) }}"
-      when:
-        - lustre_format_osts is defined
+        block_device_paths: "{{ dict(_lsblk.stdout_lines | map('regex_replace', '^\\s+\\S+', '') | reject('eq', '') | map('split')) }}" # omits devices without a serial
 
     - name: Install lustre server
       import_role:

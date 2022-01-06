@@ -6,13 +6,13 @@ lustre_install_type: server
 lustre_manage_repo: false
 lustre_format_disks: true
 lustre_format_mgs:
-  id: 45da89db-6c07-461e-a
+  device: "{{ block_device_paths['45da89db-6c07-461e-a'] }}"
 lustre_format_mdts:
-  - id: 5394d5fe-4dda-44a5-a
+  - device: "{{ block_device_paths['5394d5fe-4dda-44a5-a'] }}"
     index: 0
     mgs_nodes: "{{ hostvars['stackhpc-server'].ansible_host }}@tcp1"
 lustre_format_osts:
-  - id: c51788e8-9660-4487-b
+  - device: "{{ block_device_paths['c51788e8-9660-4487-b'] }}"
     index: 0
     mgs_nodes: "{{ hostvars['stackhpc-server'].ansible_host }}@tcp1"
 lustre_mount_disks: true
