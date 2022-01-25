@@ -1,14 +1,13 @@
-Demo of using https://github.com/mjrasobarnett/ansible-role-lustre.
-
+Demo of multi-tenant Lustre with re-export to clients via Ganesha NFS server.
 
 # Install
 
-On CentOS8
+On Rocky Linux 8.5
 
 Install ansible:
 ```
-sudo yum -y install python3 git
-python3 -m venv venv
+sudo yum -y install python3.9 git
+python3.9 -m venv venv
 . venv/bin/activate
 pip install -r requirements.txt
 ansible-galaxy install -p roles/ -r requirements.yml
