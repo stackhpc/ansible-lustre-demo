@@ -1,7 +1,7 @@
 # --- ansible-role-lustre ---
 lustre_version: '2.12.8'
 lustre_fsname: lustre
-lustre_lnet_lnetctl_networks:
+lustre_lnet_lnetctl_networks: # NB templating here means facts are required!
   'tcp1':
     - ip: "{{ hostvars[inventory_hostname]['ansible_facts']['eth0']['ipv4']['address'] }}"
       interfaces:

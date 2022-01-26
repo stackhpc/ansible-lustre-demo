@@ -1,5 +1,14 @@
 Demo of multi-tenant Lustre with re-export to clients via Ganesha NFS server.
 
+Required pre-infrastructure:
+- TCP network
+- RDMA network
+
+Deployed infrastructure:
+- Lustre server running CentOS 7.9 with LDISKFS MGT/MDT/OST created via loop devices in /var and a single Lustre fileysystem.
+- Lustre client running Rocky Linux 8.5 with admin rights (to configure nodemaps)
+- Ganesha server / Lustre client running Rocky Linux 8.5 re-exporting the Lustre filesystem over NFSv3/v4
+
 # Install
 
 On Rocky Linux 8.5
@@ -44,5 +53,5 @@ As well as creating the VMs this will also create an ansible inventory `inventor
 
 # Install and configure Lustre
 ```
-ansible -i inventory site.yml
+ansible inventory site.yml
 ```

@@ -3,18 +3,18 @@ ansible_user: centos
 
 # --- ansible-role-lustre ---
 lustre_install_type: patchless-ldiskfs-server
-lustre_manage_repo: false
+lustre_manage_repo: true
 lustre_format_disks: true
 lustre_format_mgs:
-  device: "{{ block_device_paths['45da89db-6c07-461e-a'] }}"
+  device: "{{ loopdev_mgt }}"
 lustre_format_mdts:
-  - device: "{{ block_device_paths['5394d5fe-4dda-44a5-a'] }}"
+  - device: "{{ loopdev_mdt }}"
     index: 0
-    mgs_nodes: "{{ hostvars['stackhpc-server'].ansible_host }}@tcp1"
+    mgs_nodes: "{{ hostvars[groups['servers'] | first].ansible_host }}@tcp1" # TODO: need to select interface here
 lustre_format_osts:
-  - device: "{{ block_device_paths['c51788e8-9660-4487-b'] }}"
+  - device: "{{ loopdev_ost0 }}"
     index: 0
-    mgs_nodes: "{{ hostvars['stackhpc-server'].ansible_host }}@tcp1"
+    mgs_nodes: "{{ hostvars[groups['servers'] | first].ansible_host }}@tcp1" # TODO: need to select interface here
 lustre_mount_disks: true
 
 # --- ansible-role-linux-kernel ---
@@ -29,6 +29,11 @@ kernel_custom_repo_gpgcheck: false
 install_kernel_debuginfo: true
 install_kernel_tools: false
 
+# we need to get the interface IP into INVENTORY, rather than relying on facts (as then its always available)
+# but working out which interface that IP is on might not be possible from TF??
+lustre_client_addresses: "{{ hostvars | dict2items | selectattr('value.group_names', 'contains', 'clients') | map(attribute='value.ansible_host') | ipaddr('int') | sort | ipaddr }}" # TODO: need to select interface here
+lustre_lnet: "{{ lustre_lnet_lnetctl_networks.keys() | first }}"
+
 lustre_nodemaps:
   - name: test
     # admin_nodemap: true/[false]
@@ -40,8 +45,8 @@ lustre_nodemaps:
       #   fs_id:
       #   idtype:
     ranges:
-      - start_nid: "{{ hostvars['stackhpc-client-1']['ansible_host'] }}@{{ hostvars['stackhpc-client-1']['lustre_lnet_lnetctl_networks'] | first }}"
-        end_nid: "{{ hostvars['stackhpc-client-2']['ansible_host'] }}@{{ hostvars['stackhpc-client-2']['lustre_lnet_lnetctl_networks'] | first }}"
+      - start_nid: "{{ lustre_client_addresses | first }}@{{ lustre_lnet }}"
+        end_nid: "{{ lustre_client_addresses | last }}@{{ lustre_lnet }}"
 # squash_gid: 99
 # squash_uid: 99
 # trusted_nodemap: true/[false]

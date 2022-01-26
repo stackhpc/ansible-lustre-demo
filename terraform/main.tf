@@ -14,6 +14,7 @@ variable "server_flavor_name" {}
 variable "client_flavor_name" {}
 variable "key_pair" {}
 variable "network_name" {}
+variable "rdma_network_name" {}
 variable "mgs_volume_id" {}
 variable "mdt_volume_id" {}
 variable "ost_volume_id" {}
@@ -24,6 +25,24 @@ variable "clients" {
 
 data "openstack_images_image_v2" "server_image" {
     name = var.server_image_name
+}
+
+data "openstack_networking_network_v2" "rdma_net" {
+  name = var.rdma_network_name
+}
+
+resource "openstack_networking_port_v2" "rdma" {
+  
+  for_each = toset(concat(["lustre-server"], var.clients))
+
+  name = "${var.cluster_name}-${each.key}-rdma"
+  network_id = data.openstack_networking_network_v2.rdma_net.id
+  admin_state_up = "true"
+
+  binding {
+    vnic_type = "direct"
+  }
+
 }
 
 resource "openstack_compute_instance_v2" "server" {
@@ -40,37 +59,8 @@ resource "openstack_compute_instance_v2" "server" {
         access_network = true
     }
 
-    # have to specify ephemeral disk if specifying volumes here too:
-    block_device {
-        uuid = data.openstack_images_image_v2.server_image.id
-        source_type  = "image"
-        destination_type = "local"
-        boot_index = 0
-        delete_on_termination = true
-    }
-    
-    // # MGS:
-    // block_device {
-    //     destination_type = "volume"
-    //     source_type  = "volume"
-    //     boot_index = -1
-    //     uuid = var.mgs_volume_id
-    // }
-
-    // # MDT:
-    // block_device {
-    //     destination_type = "volume"
-    //     source_type  = "volume"
-    //     boot_index = -1
-    //     uuid = var.mdt_volume_id
-    // }
-
-    // # OST:
-    // block_device {
-    //     destination_type = "volume"
-    //     source_type  = "volume"
-    //     boot_index = -1
-    //     uuid = var.ost_volume_id
+    // network {
+    //   port = openstack_networking_port_v2.rdma["lustre-server"].id
     // }
 
 }
@@ -88,6 +78,10 @@ resource "openstack_compute_instance_v2" "clients" {
   network {
     name = var.network_name
     access_network = true
+  }
+
+  network {
+    port = openstack_networking_port_v2.rdma[each.key].id
   }
 }
 
