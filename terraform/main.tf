@@ -10,7 +10,8 @@ terraform {
 variable "cluster_name" {}
 variable "server_image_name" {}
 variable "client_image_name" {}
-variable "flavor_name" {}
+variable "server_flavor_name" {}
+variable "client_flavor_name" {}
 variable "key_pair" {}
 variable "network_name" {}
 variable "mgs_volume_id" {}
@@ -18,7 +19,7 @@ variable "mdt_volume_id" {}
 variable "ost_volume_id" {}
 
 variable "clients" {
-    default = ["client-1", "client-2"]
+    default = ["admin-client", "ganesha-server"]
 }
 
 data "openstack_images_image_v2" "server_image" {
@@ -27,9 +28,9 @@ data "openstack_images_image_v2" "server_image" {
 
 resource "openstack_compute_instance_v2" "server" {
 
-    name = "${var.cluster_name}-server"
+    name = "${var.cluster_name}-lustre-server"
     image_name = var.server_image_name
-    flavor_name = var.flavor_name
+    flavor_name = var.server_flavor_name
     key_pair = var.key_pair
     config_drive = true
     security_groups = ["default"]
@@ -48,29 +49,29 @@ resource "openstack_compute_instance_v2" "server" {
         delete_on_termination = true
     }
     
-    # MGS:
-    block_device {
-        destination_type = "volume"
-        source_type  = "volume"
-        boot_index = -1
-        uuid = var.mgs_volume_id
-    }
+    // # MGS:
+    // block_device {
+    //     destination_type = "volume"
+    //     source_type  = "volume"
+    //     boot_index = -1
+    //     uuid = var.mgs_volume_id
+    // }
 
-    # MDT:
-    block_device {
-        destination_type = "volume"
-        source_type  = "volume"
-        boot_index = -1
-        uuid = var.mdt_volume_id
-    }
+    // # MDT:
+    // block_device {
+    //     destination_type = "volume"
+    //     source_type  = "volume"
+    //     boot_index = -1
+    //     uuid = var.mdt_volume_id
+    // }
 
-    # OST:
-    block_device {
-        destination_type = "volume"
-        source_type  = "volume"
-        boot_index = -1
-        uuid = var.ost_volume_id
-    }
+    // # OST:
+    // block_device {
+    //     destination_type = "volume"
+    //     source_type  = "volume"
+    //     boot_index = -1
+    //     uuid = var.ost_volume_id
+    // }
 
 }
 
@@ -79,7 +80,7 @@ resource "openstack_compute_instance_v2" "clients" {
   for_each = toset(var.clients)
   name = "${var.cluster_name}-${each.key}"
   image_name = var.client_image_name
-  flavor_name = var.flavor_name
+  flavor_name = var.client_flavor_name
   key_pair = var.key_pair
   config_drive = true
   security_groups = ["default"]
