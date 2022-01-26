@@ -1,3 +1,13 @@
+- hosts: ganesha
+  tags: ganesha
+  become: yes
+  tasks:
+    - name: Install ganesha NFS server
+      import_role:
+        name: ganesha
+      vars:
+        ganesha_fsals: ['nfs_ganesha_lustre']
+
 - hosts: servers
   tags: servers
   become: yes
@@ -7,16 +17,10 @@
         state: disabled
       register: selinux
     
-    - name: Install patched kernels for lustre
-      import_role:
-        name: ansible-role-linux-kernel
-      when: lustre_install_type == 'server'
-    
     - name: Install latest kernel packages
       yum:
         name: "{{ kernel_pkgs }}"
         state: latest
-      when: lustre_install_type == 'patchless-ldiskfs-server'
       vars:
         kernel_pkgs:
           - kernel

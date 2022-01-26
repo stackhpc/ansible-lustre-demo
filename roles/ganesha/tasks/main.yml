@@ -1,0 +1,10 @@
+---
+- name: Install ganesha repo
+  # see https://wiki.centos.org/SpecialInterestGroup/Storage/NFS-Ganesha
+  yum:
+    name: "{{ ganesha_release_package }}"
+
+- name: Install ganesha packages
+  # NB has to be done as separate step to the above
+  yum:
+    name: "{{ ['nfs-ganesha'] + ganesha_fsal_packages }}"

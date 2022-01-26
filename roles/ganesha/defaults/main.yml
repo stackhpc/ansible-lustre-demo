@@ -1,0 +1,4 @@
+---
+
+ganesha_release_package: centos-release-nfs-ganesha30 # see https://wiki.centos.org/SpecialInterestGroup/Storage
+ganesha_fsal_packages: []

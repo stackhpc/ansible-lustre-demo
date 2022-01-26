@@ -2,7 +2,7 @@
 ansible_user: centos
 
 # --- ansible-role-lustre ---
-lustre_install_type: server
+lustre_install_type: patchless-ldiskfs-server
 lustre_manage_repo: false
 lustre_format_disks: true
 lustre_format_mgs:
