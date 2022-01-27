@@ -59,9 +59,9 @@ resource "openstack_compute_instance_v2" "server" {
         access_network = true
     }
 
-    // network {
-    //   port = openstack_networking_port_v2.rdma["lustre-server"].id
-    // }
+    network {
+      port = openstack_networking_port_v2.rdma["lustre-server"].id
+    }
 
 }
 
