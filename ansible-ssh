@@ -12,6 +12,6 @@ if __name__ == '__main__':
     except Exception:
         print(proc.stdout)
         raise
-    cmd = ['ssh'] + host_vars['ansible_ssh_common_args'].split() + [host_vars['ansible_host']]
+    cmd = ['ssh'] + host_vars['ansible_ssh_common_args'].split() + [host_vars['ansible_user'] + '@' + host_vars['ansible_host']]
     print('Running', subprocess.list2cmdline(cmd))
     os.execvp(cmd[0], cmd)
