@@ -10,28 +10,14 @@ lustre_format_mgs:
 lustre_format_mdts:
   - device: "{{ loopdev_mdt }}"
     index: 0
-    mgs_nodes: "{{ hostvars[groups['servers'] | first].ansible_host }}@tcp1" # TODO: need to select interface here
+    mgs_nodes: "{{ networks[lustre_network] }}@tcp1"
 lustre_format_osts:
   - device: "{{ loopdev_ost0 }}"
     index: 0
-    mgs_nodes: "{{ hostvars[groups['servers'] | first].ansible_host }}@tcp1" # TODO: need to select interface here
+    mgs_nodes: "{{ networks[lustre_network] }}@tcp1"
 lustre_mount_disks: true
 
-# --- ansible-role-linux-kernel ---
-# These are only required when using lustre_install_type: server (i.e. patchless server or client don't require them)
-kernel_version: 3.10.0-1160.49.1.el7_lustre # Must be availble in the appropriate whamcloud repo (see below) for the above lustre version
-kernel_manage_custom_repo: "{{ true if lustre_install_type == 'server' }}"
-kernel_custom_repo_name: lustre-server
-kernel_custom_repo_baseurl: "https://downloads.whamcloud.com/public/lustre/lustre-{{ lustre_version }}/el{{ ansible_distribution_major_version }}/{{ lustre_install_type }}"
-kernel_custom_repo_description: "Lustre Server {{ lustre_version }} Yum Repository for {{ ansible_os_family }} {{ ansible_distribution_major_version }} - {{ ansible_architecture }}"
-kernel_custom_repo_enabled: true
-kernel_custom_repo_gpgcheck: false
-install_kernel_debuginfo: true
-install_kernel_tools: false
-
-# we need to get the interface IP into INVENTORY, rather than relying on facts (as then its always available)
-# but working out which interface that IP is on might not be possible from TF??
-lustre_client_addresses: "{{ hostvars | dict2items | selectattr('value.group_names', 'contains', 'clients') | map(attribute='value.ansible_host') | ipaddr('int') | sort | ipaddr }}" # TODO: need to select interface here
+lustre_client_addresses: "{{ hostvars | dict2items | selectattr('value.group_names', 'contains', 'clients') | map(attribute='value.networks.' + lustre_network) | ipaddr('int') | sort | ipaddr }}"
 lustre_lnet: "{{ lustre_lnet_lnetctl_networks.keys() | first }}"
 
 lustre_nodemaps:

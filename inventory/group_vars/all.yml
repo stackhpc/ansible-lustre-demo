@@ -1,8 +1,10 @@
+lustre_network: WCDC-iLab-60
+
 # --- ansible-role-lustre ---
 lustre_version: '2.12.8'
 lustre_fsname: lustre
 lustre_lnet_lnetctl_networks: # NB templating here means facts are required!
   'tcp1':
-    - ip: "{{ hostvars[inventory_hostname]['ansible_facts']['eth0']['ipv4']['address'] }}"
+    - ip: "{{ networks[lustre_network] }}"
       interfaces:
-         - 'eth0'
+         - "{{ ip_to_interface[networks[lustre_network]] }}"

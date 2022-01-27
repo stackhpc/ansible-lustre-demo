@@ -1,3 +1,19 @@
+- hosts: all
+  tags:
+    - always
+    - setup
+  become: no
+  gather_facts: yes
+  tasks:
+    - name: Set fact for interface information
+      set_fact:
+        interface_info: "{{ ansible_interfaces | map('extract', ansible_facts) }}"
+    - name: Set fact mapping IP addresses to interfaces
+      set_fact:
+        ip_to_interface: "{{ dict(interface_info | map(attribute='ipv' + ( ip_version | string ) + '.address') | zip( interface_info | map(attribute='device') )) }}"
+      vars:
+        ip_version: 4
+
 - hosts: servers
   tags: servers
   become: yes
@@ -112,8 +128,9 @@
         # TODO owner, mode
 
     - name: Mount lustre fileysystem
+      tags: mount
       mount:
-        src: "{{ hostvars[groups['servers'][0]]['ansible_facts']['eth0']['ipv4']['address'] }}@tcp1:/{{ lustre_fsname }}"
+        src: "{{ lustre_mount_src }}"
         path: /mnt/lustre
         fstype: lustre
         state: "{{ client_mount_state | default('mounted') }}"
