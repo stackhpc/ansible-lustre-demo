@@ -8,3 +8,18 @@
   # NB has to be done as separate step to the above
   yum:
     name: "{{ ['nfs-ganesha'] + ganesha_fsal_packages }}"
+
+- name: Apply configuration
+  template:
+    src: ganesha.conf.j2
+    dest: /etc/ganesha/ganesha.conf # directory created by package install
+    owner: root
+    group: root
+    mode: u=rw,go=r
+  register: _ganesha_config
+
+- name: (Re)Start ganesha
+  service:
+    name: nfs-ganesha
+    enabled: "{{ ganesha_enabled }}"
+    state: "{{ 'restarted' if _ganesha_config.changed else ganesha_state }}"

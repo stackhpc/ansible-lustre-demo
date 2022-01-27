@@ -2,3 +2,13 @@
 
 ganesha_release_package: centos-release-nfs-ganesha30 # see https://wiki.centos.org/SpecialInterestGroup/Storage
 ganesha_fsal_packages: []
+ganesha_exports: [] # list of mappings defining exports
+# Mapping entries as follows, see http://manpages.ubuntu.com/manpages/bionic/man8/ganesha-export-config.8.html for details:
+# .id   # required
+# .path # required
+# .pseudo # only relevant for v4, defaults to .path
+# .access_type
+# .squash
+# .fsal
+ganesha_enabled: true
+ganesha_state: running

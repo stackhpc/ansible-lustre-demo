@@ -34,16 +34,14 @@
 #}
 
 ## Configure an export for some file tree
-#EXPORT
-#{
-	## Export Id (mandatory, each EXPORT must have a unique Export_Id)
-	#Export_Id = 12345;
-
-	## Exported path (mandatory)
-	#Path = /nonexistant;
+{% for export in ganesha_exports %}
+EXPORT
+{
+	Export_Id = {{ export.id }};
+	Path = {{ export.path }};
 
 	## Pseudo Path (required for NFSv4 or if mount_path_pseudo = true)
-	#Pseudo = /nonexistant;
+	Pseudo = {{ export.pseudo | default(export.path) }}; # mandatory for v4
 
 	## Restrict the protocols that may use this export.  This cannot allow
 	## access that is denied in NFS_CORE_PARAM.
@@ -51,19 +49,20 @@
 
 	## Access type for clients.  Default is None, so some access must be
 	## given. It can be here, in the EXPORT_DEFAULTS, or in a CLIENT block
-	#Access_Type = RW;
+	Access_Type = {{ export.access_type }};
 
 	## Whether to squash various users.
-	#Squash = root_squash;
+	Squash = {{ export.squash }};
 
 	## Allowed security types for this export
 	#Sectype = sys,krb5,krb5i,krb5p;
 
 	## Exporting FSAL
-	#FSAL {
-		#Name = VFS;
-	#}
-#}
+	FSAL {
+		Name = {{ export.fsal }};
+	}
+}
+{% endfor %}{# end of exports#}
 
 ## Configure logging.  Default is to log to Syslog.  Basic logging can also be
 ## configured from the command line
