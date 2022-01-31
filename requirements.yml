@@ -2,3 +2,5 @@
 roles:
 - src: git+git@github.com:stackhpc/ansible-role-lustre.git
 - src: git+git@github.com:stackhpc/ansible-role-loopdev
+- src: git+git@github.com:stackhpc/ansible-role-cluster-nfs
+  version: feature/rdma

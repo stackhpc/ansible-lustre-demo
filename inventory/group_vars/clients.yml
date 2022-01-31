@@ -4,4 +4,4 @@ ansible_user: rocky
 # --- ansible-role-lustre ---
 lustre_install_type: client
 
-lustre_mount_src: "{{ hostvars[groups['servers'] | first].networks[lustre_network] }}@tcp1:/{{ lustre_fsname }}"
+lustre_mount_src: "{{ hostvars[groups['servers'] | first].networks[lustre_network] }}@{{ lustre_core_lnet }}:/{{ lustre_fsname }}"

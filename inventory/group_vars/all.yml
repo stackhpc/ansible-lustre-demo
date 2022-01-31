@@ -1,10 +1,12 @@
-lustre_network: WCDC-iLab-60
+lustre_core_network: WCDC-iLab-60
+lustre_core_lnet: tcp1
+lustre_core_nid: "{{ networks['lustre_core_network'] }}@{{ lustre_core_lnet }}"
 
 # --- ansible-role-lustre ---
 lustre_version: '2.12.8'
 lustre_fsname: lustre
 lustre_lnet_lnetctl_networks: # NB templating here means facts are required!
-  'tcp1':
-    - ip: "{{ networks[lustre_network] }}"
+  "{{ lustre_core_lnet }}":
+    - ip: "{{ networks[lustre_core_network] }}"
       interfaces:
-         - "{{ ip_to_interface[networks[lustre_network]] }}"
+         - "{{ ip_to_interface[networks[lustre_core_network]] }}"

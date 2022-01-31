@@ -30,6 +30,7 @@ resource "openstack_networking_subnet_v2" "project" {
   network_id = "${openstack_networking_network_v2.project.id}"
   cidr       = var.project_cidr
   ip_version = 4
+  no_gateway = true
 }
 
 module "exporter" {

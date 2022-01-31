@@ -10,29 +10,28 @@ lustre_format_mgs:
 lustre_format_mdts:
   - device: "{{ loopdev_mdt }}"
     index: 0
-    mgs_nodes: "{{ networks[lustre_network] }}@tcp1"
+    mgs_nodes: "{{ networks[lustre_core_network] }}@{{ lustre_core_lnet }}"
 lustre_format_osts:
   - device: "{{ loopdev_ost0 }}"
     index: 0
-    mgs_nodes: "{{ networks[lustre_network] }}@tcp1"
+    mgs_nodes: "{{ networks[lustre_core_network] }}@{{ lustre_core_lnet }}"
 lustre_mount_disks: true
 
-lustre_client_addresses: "{{ hostvars | dict2items | selectattr('value.group_names', 'contains', 'clients') | map(attribute='value.networks.' + lustre_network) | ipaddr('int') | sort | ipaddr }}"
-lustre_lnet: "{{ lustre_lnet_lnetctl_networks.keys() | first }}"
+#lustre_admin_ips: "{{ hostvars | dict2items | selectattr('value.group_names', 'contains', 'admin') | map(attribute='value.networks.' + lustre_core_network) | ipaddr('int') | sort | ipaddr }}"
+lustre_admin_nids: "{{ hostvars | dict2items | selectattr('value.group_names', 'contains', 'admin') | map(attribute='lustre_core_nids') | sort }}"
 
 lustre_nodemaps:
-  - name: test
-    # admin_nodemap: true/[false]
-    # audit_mode: [true]/false
-    # deny_unknown: true/[false]
-    # fileset: ''
-    # idmaps: []
-      # - client_id:
-      #   fs_id:
-      #   idtype:
+  - name: admin
+    admin_nodemap: true
+    trusted_nodemap: true
     ranges:
-      - start_nid: "{{ lustre_client_addresses | first }}@{{ lustre_lnet }}"
-        end_nid: "{{ lustre_client_addresses | last }}@{{ lustre_lnet }}"
-# squash_gid: 99
-# squash_uid: 99
-# trusted_nodemap: true/[false]
+      # - start_nid: "{{ lustre_admin_ips | first }}@{{ lustre_core_lnet }}"
+      #   end_nid: "{{ lustre_admin_ips | last }}@{{ lustre_core_lnet }}"
+  - name: projectA
+    admin_nodemap: false
+    trusted_nodemap: false
+    ranges:
+      - start_nid: "{{ hostvars['stackhpc-projectA-exporter'].lustre_core_nid"
+        end_nid: "{{ hostvars['stackhpc-projectA-exporter'].lustre_core_nid"
+
+

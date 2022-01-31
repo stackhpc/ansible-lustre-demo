@@ -13,9 +13,13 @@
         ip_to_interface: "{{ dict(interface_info | map(attribute='ipv' + ( ip_version | string ) + '.address') | zip( interface_info | map(attribute='device') )) }}"
       vars:
         ip_version: 4
+    - debug:
+        var: lustre_admin_nids
+      when: "'server' in group_names"
+    - meta: end_play
 
-- hosts: servers
-  tags: servers
+- hosts: server
+  tags: server
   become: yes
   tasks:
     - name: Disable SELinux
@@ -147,3 +151,9 @@
         name: ganesha
       vars:
         ganesha_fsals: ['nfs_ganesha_lustre']
+
+- hosts: nfs_clients
+  tags: nfs_clients
+  become: yes
+  tasks:
+    - 
