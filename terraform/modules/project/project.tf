@@ -16,6 +16,9 @@ variable "rdma_network_name" {}
 variable "project_cidr" {
   default = "192.168.0.0/24"
 }
+variable "exporter_ip" {
+  default = "192.168.0.4"
+}
 
 resource "openstack_networking_network_v2" "project" {
   name = var.project_name
@@ -40,7 +43,8 @@ module "exporter" {
   rdma_network_name = var.rdma_network_name
 }
 
-resource "openstack_compute_interface_attach_v2" "ai_1" {
+resource "openstack_compute_interface_attach_v2" "project" {
   instance_id = module.exporter.host.id
   network_id  = openstack_networking_network_v2.project.id
+  fixed_ip    = var.exporter_ip
 }
