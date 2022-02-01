@@ -1,0 +1,38 @@
+# -- general ---
+ansible_user: centos
+
+# --- ansible-role-lustre ---
+lustre_install_type: patchless-ldiskfs-server
+lustre_manage_repo: true
+lustre_format_disks: true
+lustre_format_mgs:
+  device: "{{ loopdev_mgt }}"
+lustre_format_mdts:
+  - device: "{{ loopdev_mdt }}"
+    index: 0
+    mgs_nodes: "{{ lustre_core_nid }}"
+lustre_format_osts:
+  - device: "{{ loopdev_ost0 }}"
+    index: 0
+    mgs_nodes: "{{ lustre_core_nid }}"
+lustre_mount_disks: true
+
+lustre_admin_nids: "{{ groups['admin'] | map('extract', hostvars, 'lustre_core_nid') | sort }}"
+lustre_portal_nids: "{{ groups['exporter'] | map('extract', hostvars, 'lustre_core_nid') | sort }}"
+
+lustre_nodemaps:
+  - name: admin
+    admin_nodemap: true
+    trusted_nodemap: true
+    ranges:
+      - start_nid: "{{ lustre_admin_nids | first }}"
+        end_nid: "{{ lustre_admin_nids | last }}"
+  
+  - name: portal
+    admin_nodemap: false
+    trusted_nodemap: false
+    ranges:
+      - start_nid: "{{ lustre_portal_nids | first }}"
+        end_nid: "{{ lustre_portal_nids | last }}"
+    squash_gid: 1000 # rocky/centos
+    squash_uid: 1000 # rocky/centos

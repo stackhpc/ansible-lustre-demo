@@ -13,11 +13,10 @@
         ip_to_interface: "{{ dict(interface_info | map(attribute='ipv' + ( ip_version | string ) + '.address') | zip( interface_info | map(attribute='device') )) }}"
       vars:
         ip_version: 4
-    - debug:
-        var: lustre_admin_nids
-      when: "'server' in group_names"
-    - meta: end_play
-
+    # - debug:
+    #     msg: "{{ lustre_nodemaps }}"
+    # - meta: end_here
+        
 - hosts: server
   tags: server
   become: yes
@@ -121,7 +120,7 @@
   tasks:
     - name: Gather facts from MGS
       setup:
-      delegate_to: "{{ groups['servers'][0] }}"
+      delegate_to: "{{ groups['server'] | first }}"
       delegate_facts: True
     
     - name: Install lustre client
@@ -141,19 +140,3 @@
         path: /mnt/lustre
         fstype: lustre
         state: "{{ client_mount_state | default('mounted') }}"
-
-- hosts: ganesha
-  tags: ganesha
-  become: yes
-  tasks:
-    - name: Install ganesha NFS server
-      import_role:
-        name: ganesha
-      vars:
-        ganesha_fsals: ['nfs_ganesha_lustre']
-
-- hosts: nfs_clients
-  tags: nfs_clients
-  become: yes
-  tasks:
-    - 
