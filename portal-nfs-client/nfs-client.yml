@@ -1,0 +1,14 @@
+- hosts: nfs_client
+  become: yes
+  gather_facts: no
+  tasks:
+    - import_role:
+        name: ansible-role-cluster-nfs
+      vars:
+        nfs_enable:
+            server: false
+            clients: true
+        nfs_server: 192.168.3.4
+        nfs_export: /mnt/lustre
+        nfs_client_mnt_point: /mnt/lustre
+        # nfs_client_mnt_state: absent
