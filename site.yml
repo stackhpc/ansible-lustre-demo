@@ -124,6 +124,24 @@
       delegate_to: "{{ groups['server'] | first }}"
       delegate_facts: True
     
+    - name: Check for existing lustre install
+      command: yum list --installed lustre-client
+      failed_when: false
+      changed_when: false
+      register: _yum_lustre_client
+
+    - name: Ensure kernel upgraded # as Lustre packages will be build against latest kernel
+      yum:
+        name: kernel*
+        state: latest
+      when: "'No matching Packages to list' in _yum_lustre_client.stderr"
+      register: _kernel
+    
+    - name: Reboot
+      reboot:
+        post_reboot_delay: 2
+      when: _kernel.changed | default(false)
+
     - name: Install lustre client
       import_role:
         name: ansible-role-lustre
