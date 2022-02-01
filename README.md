@@ -78,5 +78,17 @@ terraform init
 1. Review the ansible variables in `inventory/group_vars` and modify as apppropriate, then run ansible to install and configure Lustre servers/clients and NFS server:
     
     ```
-    ansible inventory site.yml
+    ansible-playbook site.yml
     ```
+
+1. Optionally, run ansible to configure example filesystem directories, aligned with the nodemaps defined in `inventory/group_vars/server.yml`:
+
+    ```
+    ansible-playbook filetree.yml
+    ```
+
+# Utility playbooks:
+
+- `client-mount.yml`: Change mount state of all Lustre clients. Useful when making changes.
+- `reimage.yml`: Revert nodes to their original image. Useful when debugging problems.
+- `fio.yml`: Run example FIO workloads.
