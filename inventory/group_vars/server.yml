@@ -18,7 +18,7 @@ lustre_format_osts:
 lustre_mount_disks: true
 
 lustre_admin_nids: "{{ groups['admin'] | map('extract', hostvars, 'lustre_core_nid') | sort }}"
-lustre_portal_nids: "{{ groups['exporter'] | map('extract', hostvars, 'lustre_core_nid') | sort }}"
+lustre_portal_nids: "{{ groups['exporters'] | map('extract', hostvars, 'lustre_core_nid') | sort }}"
 
 lustre_nodemaps:
   - name: admin
