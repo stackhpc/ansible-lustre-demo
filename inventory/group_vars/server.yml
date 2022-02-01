@@ -19,13 +19,14 @@ lustre_mount_disks: true
 
 lustre_admin_nids: "{{ groups['admin'] | map('extract', hostvars, 'lustre_core_nid') | sort }}"
 lustre_portal_nids: "{{ groups['exporters'] | map('extract', hostvars, 'lustre_core_nid') | sort }}"
+lustre_csd3_nids: "{{ groups['csd3'] | map('extract', hostvars, 'lustre_core_nid') | sort }}"
 
 lustre_nodemaps:
   - name: admin
     admin_nodemap: true
     trusted_nodemap: true
     ranges:
-      - start_nid: "{{ lustre_admin_nids | first }}"
+      - start_nid: "{{ lustre_admin_nids | first }}" # TODO: not sure NIDS will sort right here
         end_nid: "{{ lustre_admin_nids | last }}"
   
   - name: portal
@@ -36,3 +37,12 @@ lustre_nodemaps:
         end_nid: "{{ lustre_portal_nids | last }}"
     squash_gid: 1000 # rocky/centos
     squash_uid: 1000 # rocky/centos
+    fileset: /csd3/project/baz
+  
+  - name: csd3
+    admin_nodemap: false
+    trusted_nodemap: true # so can see real gids/uids
+    ranges:
+      - start_nid: "{{ lustre_csd3_nids | first }}"
+        end_nid: "{{ lustre_csd3_nids | last }}"
+    fileset: /csd3

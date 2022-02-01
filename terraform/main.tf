@@ -169,6 +169,7 @@ resource "local_file" "hosts" {
       "server" : openstack_compute_instance_v2.server,
       "admin" : openstack_compute_instance_v2.admin,
       "exporter" : openstack_compute_instance_v2.exporter,
+      "csd3": openstack_compute_instance_v2.csd3_client,
     },
   )
   filename = "${path.module}/../inventory/hosts"

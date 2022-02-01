@@ -10,6 +10,10 @@ ${admin.name} ansible_host=${[for n in admin.network: n.fixed_ip_v4 if n.access_
 [exporters]
 ${exporter.name} ansible_host=${[for n in exporter.network: n.fixed_ip_v4 if n.access_network][0]} networks='${jsonencode({for net in exporter.network: net.name => net.fixed_ip_v4 })}'
 
+[csd3]
+${csd3.name} ansible_host=${[for n in csd3.network: n.fixed_ip_v4 if n.access_network][0]} networks='${jsonencode({for net in csd3.network: net.name => net.fixed_ip_v4 })}'
+
 [clients:children]
 admin
 exporters
+csd3
