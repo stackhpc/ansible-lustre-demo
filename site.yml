@@ -1,3 +1,4 @@
+# Configure the "core" lustre infrastructure, i.e. server, admin client (to modify filesystem), exporter(s)
 - hosts: all
   tags:
     - always
@@ -137,6 +138,18 @@
       tags: mount
       mount:
         src: "{{ lustre_mount_src }}"
-        path: /mnt/lustre
+        path: "{{ lustre_mount_dir }}"
         fstype: lustre
         state: "{{ client_mount_state | default('mounted') }}"
+
+- hosts: exporters
+  tags: exporters
+  become: yes
+  tasks:
+    - import_role:
+        name: ansible-role-cluster-nfs
+      vars:
+        nfs_enable:
+            server: true
+            clients: false
+        nfs_export: "{{ lustre_mount_dir }}"

@@ -7,9 +7,9 @@ ${server.name} ansible_host=${[for n in server.network: n.fixed_ip_v4 if n.acces
 [admin]
 ${admin.name} ansible_host=${[for n in admin.network: n.fixed_ip_v4 if n.access_network][0]} networks='${jsonencode({for net in admin.network: net.name => net.fixed_ip_v4 })}'
 
-[exporter]
+[exporters]
 ${exporter.name} ansible_host=${[for n in exporter.network: n.fixed_ip_v4 if n.access_network][0]} networks='${jsonencode({for net in exporter.network: net.name => net.fixed_ip_v4 })}'
 
 [clients:children]
 admin
-exporter
+exporters

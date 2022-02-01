@@ -5,3 +5,4 @@ ansible_user: rocky
 lustre_install_type: client
 
 lustre_mount_src: "{{ hostvars[groups['server'] | first].lustre_core_nid }}:/{{ lustre_fsname }}"
+lustre_mount_dir: /mnt/lustre
