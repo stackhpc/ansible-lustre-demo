@@ -1,13 +1,40 @@
-Demo of multi-tenant Lustre with re-export to clients via Ganesha NFS server.
+Demo of multi-tenant Lustre with re-export to clients via NFS.
 
-Required pre-infrastructure:
-- TCP network
-- RDMA network
+# Overview
+Required pre-existing infrastructure:
+- A "low-latency" RDMA-capable network
+- A TCP network
 
-Deployed infrastructure:
-- Lustre server running CentOS 7.9 with LDISKFS MGT/MDT/OST created via loop devices in /var and a single Lustre fileysystem.
-- Lustre client running Rocky Linux 8.5 with admin rights (to configure nodemaps)
-- Ganesha server / Lustre client running Rocky Linux 8.5 re-exporting the Lustre filesystem over NFSv3/v4
+Deployed infrastructure on low-latency network:
+- Lustre server:
+    - CentOS 7.9
+    - LDISKFS MGT/MDT/OST created via loop devices in /var
+    - A single Lustre fileysystem, with the following tree:
+
+    ```
+        /tenants/
+            srcp-foo/
+            srcp-bar/
+        /csd3/
+            project/
+                    baz/
+                    qux/
+    ```
+
+- Lustre admin client - used for mananging the filesystem:
+    - Rocky Linux 8.5
+    - Nodemap configured with `trusted` and `admin` true to allow root to modify filesystem tree (e.g. add/remove/chown directories)
+- Lustre CSD3 client - models a client with fairly-priviledged access to multiple projects:
+    - Rocky Linux 8.5
+    - Nodemap configured with `trusted` true to allow view of real UIDs/GIDs, but `admin` is false so `root` is squashed to `nobody`.
+    - Mounts `/csd3`.
+- Lustre/NFS exporter (would be per-tenant):
+    - Rocky Linux 8.5
+    - Lustre client
+    - Kernel NFS server (also RDMA-capable)
+    - With a port tagged `nfs:lustre` (concept is protocol:filesystem name)
+
+The idea is that a non-lustre-capable client can mount from the NFS exporter. This is demoed in ` portal-nfs-client/` which contains terraform and ansible to create a VM with an NFS client mounting the above exporter.
 
 # Install
 
@@ -31,27 +58,25 @@ cd terraform/
 terraform init
 ```
 
-# Create infrastructure
+# Create and configure infrastructure
 
 1. Ensure the following are available on OpenStack:
 - A keypair with private key on the deployment host.
-- A network with internet access.
-- A CentOS 7.9 2009 image.
-- A suitable VM flavor.
-- 3x volumes, for MGS, MDT and OST.
+- Infrastructure and images as described above.
 
 1. Ensure Openstack credentials are available (e.g. download and source `openrc.sh` file).
 
-1. Run terraform:
+1. Review the variables defined in `terraform/main.tf` and `terraform/csd3.tf` and modify as appropriate, then run terraform to create the infrastructure:
 
     ```
     cd terraform/
     terraform apply
     ```
 
-As well as creating the VMs this will also create an ansible inventory `inventory/hosts`. Note the volume attachments are done at VM creation time to try to to keep device paths (e.g. `/dev/sda`) consistent across boots. Device ordering is not guaranteed though, so in production the appropriate device should be located using the OpenStack volume ID which is exposed to the VM as the device serial number.
+    As well as creating the VMs this will also create an ansible inventory file `inventory/hosts`.
 
-# Install and configure Lustre
-```
-ansible inventory site.yml
-```
+1. Review the ansible variables in `inventory/group_vars` and modify as apppropriate, then run ansible to install and configure Lustre servers/clients and NFS server:
+    
+    ```
+    ansible inventory site.yml
+    ```
