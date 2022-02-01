@@ -1,0 +1,17 @@
+# Convenience play to change state of Lustre mounts on all clients. Use -e client_mount_state=<state> where <state> is one of:
+#   absent (default)
+#   mounted
+#   present
+#   unmounted
+#   remounted
+
+- hosts: clients
+  become: yes
+  tasks:
+    - name: Change client Lustre fileysystem mount state
+      tags: mount
+      mount:
+        src: "{{ lustre_mount_src }}"
+        path: "{{ lustre_mount_dir }}"
+        fstype: lustre
+        state: "{{ client_mount_state | default('absent') }}"
