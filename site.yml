@@ -152,6 +152,23 @@
         state: directory
         # TODO owner, mode
 
+- hosts: admin
+  tags: admin
+  become: yes
+  tasks:
+    - name: Mount lustre fileysystem
+      tags: mount
+      mount:
+        src: "{{ lustre_mount_src }}"
+        path: "{{ lustre_mount_dir }}"
+        fstype: lustre
+        state: "{{ client_mount_state | default('mounted') }}"
+    - import_tasks: filetree.yml # have to have this in place before mounting clients as mount fails if path defined in nodeset's `fileset` attribute doesn't exist
+
+- hosts: clients:!admin
+  tags: clients
+  become: yes
+  tasks:
     - name: Mount lustre fileysystem
       tags: mount
       mount:

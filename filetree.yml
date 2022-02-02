@@ -1,35 +1,32 @@
 # Configure the lustre filesystem with some demo projects
-- hosts: admin
-  become: true
-  tasks:
-    - name: Create project directories and files
-      file: "{{ item }}"
-      loop:
-        - path: /mnt/lustre/tenants
-          state: directory
-          owner: "{{ ansible_user }}"
-          group: "{{ ansible_user }}"
-        - path: /mnt/lustre/tenants/srcp-foo
-          state: directory
-          owner: "{{ ansible_user }}"
-          group: "{{ ansible_user }}"
-        - path: /mnt/lustre/tenants/srcp-bar
-          state: directory
-          owner: "{{ ansible_user }}"
-          group: "{{ ansible_user }}"
-        - path: /mnt/lustre/csd3
-          state: directory
-          owner: "{{ ansible_user }}"
-          group: "{{ ansible_user }}"
-        - path: /mnt/lustre/csd3/project
-          state: directory
-          owner: "{{ ansible_user }}"
-          group: "{{ ansible_user }}"
-        - path: /mnt/lustre/csd3/project/baz # <- this is what Portal VMs will mount over NFS
-          state: directory
-          owner: "{{ ansible_user }}"
-          group: "{{ ansible_user }}"
-        - path: /mnt/lustre/csd3/project/qux
-          state: directory
-          owner: "{{ ansible_user }}"
-          group: "{{ ansible_user }}"
+- name: Create project directories and files
+  file: "{{ item }}"
+  loop:
+    - path: /mnt/lustre/tenants
+      state: directory
+      owner: "{{ ansible_user }}"
+      group: "{{ ansible_user }}"
+    - path: /mnt/lustre/tenants/srcp-foo
+      state: directory
+      owner: "{{ ansible_user }}"
+      group: "{{ ansible_user }}"
+    - path: /mnt/lustre/tenants/srcp-bar
+      state: directory
+      owner: "{{ ansible_user }}"
+      group: "{{ ansible_user }}"
+    - path: /mnt/lustre/csd3
+      state: directory
+      owner: "{{ ansible_user }}"
+      group: "{{ ansible_user }}"
+    - path: /mnt/lustre/csd3/project
+      state: directory
+      owner: "{{ ansible_user }}"
+      group: "{{ ansible_user }}"
+    - path: /mnt/lustre/csd3/project/baz # <- this is what Portal VMs will mount over NFS
+      state: directory
+      owner: "{{ ansible_user }}"
+      group: "{{ ansible_user }}"
+    - path: /mnt/lustre/csd3/project/qux
+      state: directory
+      owner: "{{ ansible_user }}"
+      group: "{{ ansible_user }}"

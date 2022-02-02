@@ -81,14 +81,9 @@ terraform init
     ansible-playbook site.yml
     ```
 
-1. Optionally, run ansible to configure example filesystem directories, aligned with the nodemaps defined in `inventory/group_vars/server.yml`:
-
-    ```
-    ansible-playbook filetree.yml
-    ```
-
-# Utility playbooks:
+# Utility playbooks and scripts:
 
 - `client-mount.yml`: Change mount state of all Lustre clients. Useful when making changes.
 - `reimage.yml`: Revert nodes to their original image. Useful when debugging problems.
 - `fio.yml`: Run example FIO workloads.
+- `ansible-ssh`: Login to a node using ansible information (e.g. user) - pass `--host <inventory_hostname>` to select node.
