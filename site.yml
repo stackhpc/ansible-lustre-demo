@@ -45,6 +45,10 @@
       reboot:
       when: kernel_install.changed | default('false') or selinux.reboot_required
     
+    - name: Enable RoCE # only required for RHEL7, 8.5 at least this is already done
+      import_tasks: roce.yml
+      when: "'o2ib' in lustre_core_nid"
+
     - name: Update facts after (possible) reboot
       setup:
 

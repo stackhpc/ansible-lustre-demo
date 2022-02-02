@@ -1,0 +1,9 @@
+# Required on CentOS 7.9, not required on Rocky Linux 8.5 at least
+- name: Install InfiniBand/RoCE support packages
+  yum:
+    name: "@infiniband"
+- name: Enable RDMA
+  systemd:
+    name: rdma.service
+    state: started
+    enabled: true

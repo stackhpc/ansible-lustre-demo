@@ -1,12 +1,12 @@
 lustre_core_network: WCDC-iLab-60
 lustre_core_ip: "{{ networks[lustre_core_network] }}" # needs facts to have been gathered and set in site.yml
-lustre_core_nid: "{{ lustre_core_ip }}@tcp1"
+lustre_core_nid: "{{ lustre_core_ip }}@o2ib0"
 
 # --- ansible-role-lustre ---
 lustre_version: '2.12.8'
 lustre_fsname: lustre
 lustre_lnet_lnetctl_networks:
-  tcp1: # NB can't interpolate dict keys :-(
+  o2ib0: # NB can't interpolate dict keys :-(
     - ip: "{{ lustre_core_ip }}"   # needs facts to have been gathered and set in site.yml
       interfaces:
          - "{{ ip_to_interface[lustre_core_ip] }}"
