@@ -2,8 +2,8 @@ Demo of multi-tenant Lustre with re-export to clients via NFS.
 
 # Overview
 Required pre-existing infrastructure:
-- A "low-latency" RDMA-capable network
-- A TCP network
+- A "low-latency" RDMA-capable network (modelling the core Lustre network)
+- A TCP network (modelling a storage network in a tenancy)
 
 Deployed infrastructure on low-latency network:
 - Lustre server:
@@ -33,8 +33,9 @@ Deployed infrastructure on low-latency network:
     - Lustre client
     - Kernel NFS server (also RDMA-capable)
     - With a port tagged `nfs:lustre` (concept is protocol:filesystem name)
+    - Mounts `/csd3/project/baz`
 
-The idea is that a non-lustre-capable client can mount from the NFS exporter. This is demoed in ` portal-nfs-client/` which contains terraform and ansible to create a VM with an NFS client mounting the above exporter.
+The idea is that a non-lustre-capable client in an isolated tenancy can mount from the NFS exporter. This is demoed in ` portal-nfs-client/` which contains terraform and ansible to create a VM with an NFS client mounting the above exporter.
 
 # Install
 
