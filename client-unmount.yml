@@ -1,11 +1,22 @@
-# Convenience play to change state of Lustre mounts on all clients. Use -e client_mount_state=<state> where <state> is one of:
-#   absent (default)
-#   mounted
-#   present
-#   unmounted
-#   remounted
+# Convenience play to unmount all client filesystems in the right order
 
-- hosts: clients
+- hosts: nfs_client
+  become: yes
+  tasks:
+    - name: Unmount NFS demo client
+      command: umount /mnt/lustre
+      failed_when: false
+
+- hosts: exporters
+  become: yes
+  tasks:
+    - name: Stop NFS server
+      service:
+        name: nfs-server
+        state: stopped
+      failed_when: false
+
+- hosts: clients:admin
   become: yes
   tasks:
     - name: Change client Lustre fileysystem mount state
@@ -14,4 +25,4 @@
         src: "{{ lustre_mount_src }}"
         path: "{{ lustre_mount_dir }}"
         fstype: lustre
-        state: "{{ client_mount_state | default('absent') }}"
+        state: absent
