@@ -10,6 +10,15 @@
       std_write: "fio --ioengine=libaio --direct=1 --gtod_reduce=1 --name=test-write --filename=fiotest-$(hostname) --bs=4M --iodepth=256 --size={{ fio_size }} --readwrite=write --refill_buffers --numjobs={{ ansible_processor_count }}"
     
   tasks:
+    - name: get filesystem for lustre mountpoint
+      command:
+        cmd: df --output=fstype /mnt/lustre/
+      changed_when: false
+      register: df_mnt_lustre
+    - name: ensure /mnt/lustre is actually mounted
+      assert:
+        that: "'nfs' in df_mnt_lustre.stdout_lines[1] or 'lustre' in df_mnt_lustre.stdout_lines[1]"
+        fail_msg: "/mnt/lustre is not an NFS or Lustre filesystem on host '{{ inventory_hostname}}'"
     - name: install fio
       package:
         name: fio
