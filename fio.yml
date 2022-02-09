@@ -4,10 +4,10 @@
   gather_facts: yes
   become: yes
   vars:
-    fio_size: 32G
+    fio_size: 1G
     fio_cmds:
-      std_read: "fio --randrepeat=1 --ioengine=libaio --direct=1 --gtod_reduce=1 --name=test --filename=fiotest-$(hostname) --bs=512k --iodepth=16 --size={{ fio_size }} --readwrite=randread --refill_buffers --numjobs={{ ansible_processor_count }}"
-      std_write: "fio --ioengine=libaio --direct=1 --gtod_reduce=1 --name=test-write --filename=fiotest-$(hostname) --bs=4M --iodepth=256 --size={{ fio_size }} --readwrite=write --refill_buffers --numjobs={{ ansible_processor_count }}"
+      std_read: "fio --randrepeat=1 --ioengine=libaio --direct=1 --gtod_reduce=1 --name=test --filename=fiotest-$(hostname) --bs=512k --iodepth=16 --size={{ fio_size }} --readwrite=randread --refill_buffers --numjobs={{ ansible_processor_nproc }}"
+      std_write: "fio --ioengine=libaio --direct=1 --gtod_reduce=1 --name=test-write --filename=fiotest-$(hostname) --bs=4M --iodepth=16 --size={{ fio_size }} --readwrite=write --refill_buffers --numjobs={{ ansible_processor_nproc }}"
     
   tasks:
     - name: get filesystem for lustre mountpoint
@@ -28,6 +28,7 @@
         chdir: /mnt/lustre
       throttle: 1
       loop: "{{ fio_cmds | dict2items }}"
+      when: "(fio_run | default(item.key)) == item.key"
       register: _fio
     - debug:
         msg: "{{ _fio.results | map(attribute='stdout_lines') | map('last') | to_nice_yaml }}"
