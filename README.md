@@ -82,6 +82,12 @@ terraform init
     ansible-playbook site.yml
     ```
 
+1. Create a `grafana_password` in e.g. `inventory/group_vars/all/secrets.yml` and then run:
+
+    ```
+    ansible-playbook monitoring.yml
+    ```
+
 # Utility playbooks and scripts:
 
 - `client-mount.yml`: Change mount state of all Lustre clients. Useful when making changes.

@@ -1,0 +1,22 @@
+- hosts: localhost
+  gather_facts: false
+  tasks:
+    - fail:
+        msg: 'graphana password is required: ansible-playbook -i inventory monitoring.yml -e "grafana_password=<PASSWORD>"'
+      when: "grafana_password is not defined"
+
+- name: Deploy node_exporter
+  hosts: all
+  gather_facts: true # else it breaks
+  roles:
+    - cloudalchemy.node_exporter
+  tags:
+    - node_exporter
+
+- name: Setup core monitoring software
+  hosts: server
+  roles:
+    - cloudalchemy.blackbox-exporter
+    - cloudalchemy.snmp-exporter
+    - cloudalchemy.prometheus
+    - cloudalchemy.grafana
