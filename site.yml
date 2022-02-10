@@ -120,14 +120,16 @@
         that: item in _lctl_dl.stdout
         fail_msg: "Did not find '{{ item }}' in lctl dl output"
       loop:
-        - UP mgs
-        - UP mgc
+        - UP mgs MGS
+        - "UP mgc MGC{{ lustre_core_nid }}"
         - UP mds
         - UP mdt
         - UP ost
 
 - hosts: clients
-  tags: clients
+  tags:
+    - clients
+    - admin
   become: yes
   tasks:
     - name: Gather facts from MGS
