@@ -8,7 +8,7 @@ Required pre-existing infrastructure:
 Deployed infrastructure on low-latency network:
 - Lustre server:
     - CentOS 7.9
-    - LDISKFS MGT/MDT/OST created via loop devices in /var
+    - LDISKFS MGT/MDT/OST created on ephemeral devices (NB: needs Nova option `max_local_block_devices` < 0 or >= 4).
     - A single Lustre fileysystem, with the following tree:
 
     ```
@@ -31,11 +31,13 @@ Deployed infrastructure on low-latency network:
 - Lustre/NFS exporter (would be per-tenant):
     - Rocky Linux 8.5
     - Lustre client
-    - Kernel NFS server (also RDMA-capable)
+    - Kernel NFS server (also RDMA-capable, via configuration)
     - With a port tagged `nfs:lustre` (concept is protocol:filesystem name)
     - Mounts `/csd3/project/baz`
 
 The idea is that a non-lustre-capable client in an isolated tenancy can mount from the NFS exporter. This is demoed in ` portal-nfs-client/` which contains terraform and ansible to create a VM with an NFS client mounting the above exporter.
+
+Note currently the Lustre Lnet is set to `tcp` despite being on a RDMA-capable network as that provided better performance in the Arcus environment.
 
 # Install
 
@@ -81,6 +83,8 @@ terraform init
     ```
     ansible-playbook site.yml
     ```
+
+    **NB:** the first time (only) append `-e lustre_format_force=true` as the server VM is created with ext4-formatted ephermeral disks (despite asking not to). This will reformat the devices specified by the `lustre_format_{mgs,mdts,osts}` variables so use with caution!
 
 1. Create a `grafana_password` in e.g. `inventory/group_vars/all/secrets.yml` and then run:
 

@@ -14,6 +14,19 @@ variable "server_image_name" {
 variable "server_flavor_name" {
   default = "vm.iris.cpu.dac.half"
 }
+
+variable "mgt_size" {
+  default = 10
+}
+
+variable "mdt_size" {
+  default = 40
+}
+
+variable "ost_size" {
+  default = 300
+}
+
 # admin client:
 variable "admin_image_name" {
   default = "RockyLinux-8.5-20211114.2"
@@ -62,6 +75,10 @@ data "openstack_networking_subnet_v2" "exporter_subnet" {
   name = var.exporter_subnet_name
 }
 
+data "openstack_images_image_v2" "server_root" {
+  name = var.server_image_name
+}
+
 resource "openstack_networking_port_v2" "server" {
   
   name = "lustre-server"
@@ -86,6 +103,41 @@ resource "openstack_compute_instance_v2" "server" {
     network {
       port = openstack_networking_port_v2.server.id
       access_network = true
+    }
+
+    block_device {
+      boot_index            = 0
+      delete_on_termination = true
+      destination_type      = "local"
+      source_type           = "image"
+      uuid                  = data.openstack_images_image_v2.server_root.id
+    }
+
+    # MGT
+    block_device {
+      boot_index            = -1
+      delete_on_termination = true
+      destination_type      = "local"
+      source_type           = "blank"
+      volume_size           = var.mgt_size
+    }
+    
+    # MDT
+    block_device {
+      boot_index            = -1
+      delete_on_termination = true
+      destination_type      = "local"
+      source_type           = "blank"
+      volume_size           = var.mdt_size
+    }
+
+    # OST
+    block_device {
+      boot_index            = -1
+      delete_on_termination = true
+      destination_type      = "local"
+      source_type           = "blank"
+      volume_size           = var.ost_size
     }
 
 }

@@ -6,13 +6,13 @@ lustre_install_type: patchless-ldiskfs-server
 lustre_manage_repo: true
 lustre_format_disks: true
 lustre_format_mgs:
-  device: "{{ loopdev_mgt }}"
+  device: /dev/vdb
 lustre_format_mdts:
-  - device: "{{ loopdev_mdt }}"
+  - device: /dev/vdc
     index: 0
     mgs_nodes: "{{ lustre_core_nid }}"
 lustre_format_osts:
-  - device: "{{ loopdev_ost0 }}"
+  - device: /dev/vdd
     index: 0
     mgs_nodes: "{{ lustre_core_nid }}"
 lustre_mount_disks: true

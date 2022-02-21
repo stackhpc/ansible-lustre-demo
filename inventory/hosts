@@ -2,16 +2,16 @@
 ansible_ssh_common_args= '-o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no'
 
 [server]
-lustre-server ansible_host=10.60.102.225 networks='{"WCDC-iLab-60":"10.60.102.225"}'
+lustre-server ansible_host=10.60.102.46 networks='{"WCDC-iLab-60":"10.60.102.46"}'
 
 [admin]
-lustre-admin ansible_host=10.60.102.156 networks='{"WCDC-iLab-60":"10.60.102.156"}'
+lustre-admin ansible_host=10.60.102.244 networks='{"WCDC-iLab-60":"10.60.102.244"}'
 
 [exporters]
-lustre-exporter ansible_host=10.60.102.33 networks='{"WCDC-iLab-60":"10.60.102.33","portal-internal":"192.168.3.4"}'
+lustre-exporter ansible_host=10.60.102.118 networks='{"WCDC-iLab-60":"10.60.102.118","portal-internal":"192.168.3.4"}'
 
 [csd3]
-lustre-csd-client ansible_host=10.60.102.182 networks='{"WCDC-iLab-60":"10.60.102.182"}'
+lustre-csd-client ansible_host=10.60.102.193 networks='{"WCDC-iLab-60":"10.60.102.193"}'
 
 [clients:children]
 admin

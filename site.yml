@@ -59,42 +59,11 @@
     - name: Update facts after (possible) reboot
       setup:
 
-    - name: Create MGT device
-      import_role:
-        name: ansible-role-loopdev
-      vars:
-        loopdev_path: /var/mgt0
-        loopdev_size: 1GB
-        loopdev_fstype: ''
-    - set_fact:
-        loopdev_mgt: "{{ loopdev.dev }}"
-    - debug:
-        var:  loopdev_mgt
+    - name: Unmount auto-mounted ephemeral disk if reformatting
+      shell:
+        cmd: "umount $(lsblk --noheadings -o mountpoint {{ lustre_format_mgs.device }})" # does assume this is the first ephemeral
+      when: lustre_format_force
       
-    - name: Create MDT device
-      import_role:
-        name: ansible-role-loopdev
-      vars:
-        loopdev_path: /var/mdt0
-        loopdev_size: 5GB
-        loopdev_fstype: ''
-    - set_fact:
-        loopdev_mdt: "{{ loopdev.dev }}"
-    - debug:
-        var:  loopdev_mdt
-    
-    - name: Create OST device
-      import_role:
-        name: ansible-role-loopdev
-      vars:
-        loopdev_path: /var/ost0
-        loopdev_size: 100GB
-        loopdev_fstype: ''
-    - set_fact:
-        loopdev_ost0: "{{ loopdev.dev }}"
-    - debug:
-        var:  loopdev_ost0
-
     - name: Install lustre server
       import_role:
         name: ansible-role-lustre
