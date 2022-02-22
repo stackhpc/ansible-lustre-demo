@@ -24,9 +24,26 @@
       group: "{{ ansible_user }}"
     - path: /mnt/lustre/csd3/project/baz # <- this is what Portal VMs will mount over NFS
       state: directory
-      owner: "{{ ansible_user }}"
-      group: "{{ ansible_user }}"
+      owner: bazowner
+      group: bazmember
+    - path: /mnt/lustre/csd3/project/baz/readwrite
+      state: directory
+      owner: bazowner
+      group: bazmember
+      mode: ugo=rwx
+    - path: /mnt/lustre/csd3/project/baz/readonly
+      state: directory
+      owner: bazowner
+      group: bazmember
+      mode: ugo=rx
     - path: /mnt/lustre/csd3/project/qux
       state: directory
       owner: "{{ ansible_user }}"
       group: "{{ ansible_user }}"
+- name: Create example NFS-exported read-only file
+  copy:
+    dest: /mnt/lustre/csd3/project/baz/readonly/readme.txt
+    content: hello world!
+    owner: bazowner
+    group: bazmember
+    mode: ugo=r
