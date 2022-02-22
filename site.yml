@@ -1,3 +1,13 @@
+- hosts:
+    - server
+    - clients
+  tags: ldap
+  become: yes
+  tasks:
+    - name: Fake LDAP on Lustre server/clients
+      ansible.builtin.user: "{{ item }}"
+      loop: "{{ ldap_users }}"
+
 # Configure the "core" lustre infrastructure, i.e. server, admin client (to modify filesystem), exporter(s)
 - hosts: all
   tags:
@@ -148,7 +158,9 @@
     - import_tasks: filetree.yml # have to have this in place before mounting clients as mount fails if path defined in nodeset's `fileset` attribute doesn't exist
 
 - hosts: clients:!admin
-  tags: clients
+  tags:
+    - clients
+    - filetree
   become: yes
   tasks:
     - name: Mount lustre fileysystem
