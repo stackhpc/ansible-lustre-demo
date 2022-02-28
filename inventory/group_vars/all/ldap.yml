@@ -1,0 +1,6 @@
+# NB: although defined on "all" for convenience, this is NOT applied to the NFS demo-client
+ldap_users:
+  - name: bazowner
+    uid: 10101
+  - name: bazmember
+    uid: 10102
