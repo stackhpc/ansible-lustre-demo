@@ -11,7 +11,7 @@ lustre-admin ansible_host=10.60.102.244 networks='{"WCDC-iLab-60":"10.60.102.244
 lustre-exporter ansible_host=10.60.102.118 networks='{"WCDC-iLab-60":"10.60.102.118","portal-internal":"192.168.3.4"}'
 
 [csd3]
-lustre-csd-client ansible_host=10.60.102.193 networks='{"WCDC-iLab-60":"10.60.102.193"}'
+lustre-csd3-client ansible_host=10.60.102.193 networks='{"WCDC-iLab-60":"10.60.102.193"}'
 
 [clients:children]
 admin

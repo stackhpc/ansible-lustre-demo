@@ -2,4 +2,4 @@
 ansible_ssh_common_args= '-o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no'
 
 [nfs_client]
-demo-client ansible_host=192.168.3.105 networks='{"portal-internal":"192.168.3.105"}'
+demo-client ansible_host=192.168.3.170 networks='{"portal-internal":"192.168.3.170"}'
