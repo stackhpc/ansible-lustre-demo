@@ -12,7 +12,7 @@ variable "image_name" {
   default = "RockyLinux-8.5-20211114.2"
 }
 variable "flavor_name" {
-  default = "vm.alaska.cpu.general.small"
+  default = "vm.iris.cpu.dac.quarter"
 }
 variable "exporter_network_name" {
   default = "portal-internal"

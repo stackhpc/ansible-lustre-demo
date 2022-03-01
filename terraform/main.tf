@@ -39,7 +39,7 @@ variable "exporter_image_name" {
   default = "RockyLinux-8.5-20211114.2"
 }
 variable "exporter_flavor_name" {
-  default = "vm.alaska.cpu.general.small"
+  default = "vm.iris.cpu.dac.quarter"
 }
 variable "exporter_network_name" {
   default = "portal-internal"
@@ -49,6 +49,18 @@ variable "exporter_subnet_name" {
 }
 variable "exporter_ip" {
   default = "192.168.3.4"
+}
+
+variable "exporter_security_groups" {
+  default = ["default", "nfs-from-k8s"]
+}
+
+variable "csd3_image_name" {
+  default = "RockyLinux-8.5-20211114.2"
+}
+
+variable "csd3_flavor_name" {
+  default = "vm.iris.cpu.dac.quarter"
 }
 
 # all:
@@ -202,7 +214,7 @@ resource "openstack_compute_instance_v2" "exporter" {
     flavor_name = var.exporter_flavor_name
     key_pair = var.key_pair
     config_drive = true
-    security_groups = var.security_groups
+    security_groups = var.exporter_security_groups
 
     network {
       port = openstack_networking_port_v2.exporter.id

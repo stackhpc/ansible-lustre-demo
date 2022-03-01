@@ -13,9 +13,9 @@ resource "openstack_networking_port_v2" "csd3_client" {
 
 resource "openstack_compute_instance_v2" "csd3_client" {
 
-    name = "lustre-csd-client"
-    image_name = var.admin_image_name
-    flavor_name = var.admin_flavor_name
+    name = "lustre-csd3-client"
+    image_name = var.csd3_image_name
+    flavor_name = var.csd3_flavor_name
     key_pair = var.key_pair
     config_drive = true
     security_groups = var.security_groups
