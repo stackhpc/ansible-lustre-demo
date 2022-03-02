@@ -30,13 +30,13 @@ lustre_nodemaps:
         end_nid: "{{ lustre_admin_nids | last }}"
   
   - name: portal
-    admin_nodemap: false
-    trusted_nodemap: false
+    admin_nodemap: false # squashes root
+    trusted_nodemap: false # cannot see real gid/uid
     ranges:
       - start_nid: "{{ lustre_portal_nids | first }}"
         end_nid: "{{ lustre_portal_nids | last }}"
+    squash_uid: 99 # nobody
     squash_gid: 1000 # rocky/centos
-    squash_uid: 1000 # rocky/centos
     fileset: /csd3/project/baz
   
   - name: csd3

@@ -24,18 +24,19 @@
       group: "{{ ansible_user }}"
     - path: /mnt/lustre/csd3/project/baz # <- this is what Portal VMs will mount over NFS
       state: directory
-      owner: bazowner
-      group: bazmember
+      owner: root
+      group: rocky
+      mode: ug=rx,o=
     - path: /mnt/lustre/csd3/project/baz/readwrite
       state: directory
-      owner: bazowner
-      group: bazmember
-      mode: ugo=rwx
+      owner: root
+      group: rocky
+      mode: ug=rwx,o=
     - path: /mnt/lustre/csd3/project/baz/readonly
       state: directory
-      owner: bazowner
-      group: bazmember
-      mode: ugo=rx
+      owner: root
+      group: rocky
+      mode: ug=rx,o=
     - path: /mnt/lustre/csd3/project/qux
       state: directory
       owner: "{{ ansible_user }}"
