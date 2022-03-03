@@ -69,6 +69,7 @@
       when: lustre_format_force
       
     - name: Install lustre server
+      tags: lustre_server_role
       import_role:
         name: ansible-role-lustre
     
@@ -180,6 +181,7 @@
             server: true
             clients: false
         nfs_export: "{{ lustre_mount_dir }}"
+        nfs_export_options: rw,insecure #,root_squash,all_squash,anongid=10102
 
 - hosts: nfs_clients
   tags:

@@ -98,3 +98,10 @@ terraform init
 - `reimage.yml`: Revert nodes to their original image. Useful when debugging problems.
 - `fio.yml`: Run example FIO workloads.
 - `ansible-ssh`: Login to a node using ansible information (e.g. user) - pass `--host <inventory_hostname>` to select node.
+
+To change permisions/mapping/squashing etc. it is probably safest to unmount first:
+
+     ansible-playbook client-unmount.yml
+     ansible-playbook site.yml --tags filetree
+
+The second command will create/set directory/file permissions, mount lustre clients, export NFS and mount NFS clients.

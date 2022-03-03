@@ -36,7 +36,7 @@ lustre_nodemaps:
       - start_nid: "{{ lustre_portal_nids | first }}"
         end_nid: "{{ lustre_portal_nids | last }}"
     squash_uid: 99 # nobody
-    squash_gid: 1000 # rocky/centos
+    squash_gid: 10100 # bazowner
     fileset: /csd3/project/baz
   
   - name: csd3

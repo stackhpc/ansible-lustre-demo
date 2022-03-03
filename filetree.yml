@@ -49,4 +49,4 @@
 
     owner: baz1
     group: bazowner
-    mode: ugo=r
+    mode: ug=r
