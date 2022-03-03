@@ -1,0 +1,9 @@
+users:
+  - name: bazowner
+    uid: 10100
+  - name: baz1
+    uid: 10101
+    groups: bazowner
+  - name: baz2
+    uid: 10102
+    groups: bazowner

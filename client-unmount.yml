@@ -1,13 +1,13 @@
 # Convenience play to unmount all client filesystems in the right order
 
-- hosts: nfs_client
+- hosts: nfs_clients
   become: yes
   tasks:
     - name: Unmount NFS demo client
       command: umount /mnt/lustre
       failed_when: false
 
-- hosts: exporters
+- hosts: lustre_exporters
   become: yes
   tasks:
     - name: Stop NFS server
@@ -16,7 +16,7 @@
         state: stopped
       failed_when: false
 
-- hosts: clients:admin
+- hosts: lustre_clients
   become: yes
   tasks:
     - name: Change client Lustre fileysystem mount state

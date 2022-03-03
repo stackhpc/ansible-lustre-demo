@@ -1,15 +1,4 @@
-- hosts:
-    - server
-    - clients
-  tags: ldap
-  become: yes
-  tasks:
-    - name: Fake LDAP on Lustre server/clients
-      ansible.builtin.user: "{{ item }}"
-      loop: "{{ ldap_users }}"
-
-# Configure the "core" lustre infrastructure, i.e. server, admin client (to modify filesystem), exporter(s)
-- hosts: all
+- hosts: lustre
   tags:
     - always
     - setup
@@ -24,12 +13,17 @@
         ip_to_interface: "{{ dict(interface_info | map(attribute='ipv' + ( ip_version | string ) + '.address') | zip( interface_info | map(attribute='device') )) }}"
       vars:
         ip_version: 4
-    # - debug:
-    #     msg: "{{ lustre_nodemaps }}"
-    # - meta: end_here
-        
-- hosts: server
-  tags: server
+
+- hosts: all
+  tags: users
+  become: yes
+  tasks:
+    - name: Create users
+      ansible.builtin.user: "{{ item }}"
+      loop: "{{ users }}"
+
+- hosts: lustre_server
+  tags: lustre_server
   become: yes
   tasks:
     - name: Disable SELinux
@@ -105,15 +99,15 @@
         - UP mdt
         - UP ost
 
-- hosts: clients
+- hosts: lustre_clients
   tags:
-    - clients
-    - admin
+    - lustre_clients
+    - lustre_admin
   become: yes
   tasks:
     - name: Gather facts from MGS
       setup:
-      delegate_to: "{{ groups['server'] | first }}"
+      delegate_to: "{{ groups['lustre_server'] | first }}"
       delegate_facts: True
     
     - name: Check for existing lustre install
@@ -144,8 +138,10 @@
         state: directory
         # TODO owner, mode
 
-- hosts: admin
-  tags: admin
+- hosts: lustre_admin
+  tags:
+    - lustre_admin
+    - filetree
   become: yes
   tasks:
     - name: Mount lustre fileysystem
@@ -157,9 +153,9 @@
         state: "{{ client_mount_state | default('mounted') }}"
     - import_tasks: filetree.yml # have to have this in place before mounting clients as mount fails if path defined in nodeset's `fileset` attribute doesn't exist
 
-- hosts: clients:!admin
+- hosts: lustre_clients:!lustre_admin
   tags:
-    - clients
+    - lustre_clients
     - filetree
   become: yes
   tasks:
@@ -171,8 +167,10 @@
         fstype: lustre
         state: "{{ client_mount_state | default('mounted') }}"
 
-- hosts: exporters
-  tags: exporters
+- hosts: lustre_exporters
+  tags:
+    - lustre_exporters
+    - filetree
   become: yes
   tasks:
     - import_role:
@@ -182,3 +180,30 @@
             server: true
             clients: false
         nfs_export: "{{ lustre_mount_dir }}"
+
+- hosts: nfs_clients
+  tags:
+    - nfs_clients
+    - filetree
+  become: yes
+  gather_facts: yes
+  tasks:
+    - import_role:
+        name: ansible-role-cluster-nfs
+      vars:
+        nfs_enable:
+            server: false
+            clients: true
+        nfs_server: "{{ hostvars[groups['lustre_exporters'] | first].networks[networks | first] }}" # exporter addres on same network as this host
+        nfs_export: /mnt/lustre
+        nfs_client_mnt_point: /mnt/lustre
+        # nfs_client_mnt_state: absent
+
+- hosts: all
+  become: yes
+  tags: tree
+  gather_facts: no
+  tasks:
+    - yum:
+        name: tree
+

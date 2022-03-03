@@ -17,9 +17,9 @@ lustre_format_osts:
     mgs_nodes: "{{ lustre_core_nid }}"
 lustre_mount_disks: true
 
-lustre_admin_nids: "{{ groups['admin'] | map('extract', hostvars, 'lustre_core_nid') | sort }}"
-lustre_portal_nids: "{{ groups['exporters'] | map('extract', hostvars, 'lustre_core_nid') | sort }}"
-lustre_csd3_nids: "{{ groups['csd3'] | map('extract', hostvars, 'lustre_core_nid') | sort }}"
+lustre_admin_nids: "{{ groups['lustre_admin'] | map('extract', hostvars, 'lustre_core_nid') | sort }}"
+lustre_portal_nids: "{{ groups['lustre_exporters'] | map('extract', hostvars, 'lustre_core_nid') | sort }}"
+lustre_csd3_nids: "{{ groups['lustre_csd3'] | map('extract', hostvars, 'lustre_core_nid') | sort }}"
 
 lustre_nodemaps:
   - name: admin

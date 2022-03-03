@@ -27,17 +27,17 @@ variable "ost_size" {
   default = 300
 }
 
-# admin client:
-variable "admin_image_name" {
+# clients:
+variable "client_image_name" {
   default = "RockyLinux-8.5-20211114.2"
 }
+
+# admin client:
 variable "admin_flavor_name" {
   default = "vm.alaska.cpu.general.small"
 }
+
 # lustre->nfs exporter:
-variable "exporter_image_name" {
-  default = "RockyLinux-8.5-20211114.2"
-}
 variable "exporter_flavor_name" {
   default = "vm.iris.cpu.dac.quarter"
 }
@@ -55,11 +55,13 @@ variable "exporter_security_groups" {
   default = ["default", "nfs-from-k8s"]
 }
 
-variable "csd3_image_name" {
-  default = "RockyLinux-8.5-20211114.2"
+# csd client:
+variable "csd3_flavor_name" {
+  default = "vm.iris.cpu.dac.quarter"
 }
 
-variable "csd3_flavor_name" {
+# demo nfs client:
+variable "demo_nfs_client_flavor_name" {
   default = "vm.iris.cpu.dac.quarter"
 }
 
@@ -169,7 +171,7 @@ resource "openstack_networking_port_v2" "admin" {
 resource "openstack_compute_instance_v2" "admin" {
 
     name = "lustre-admin"
-    image_name = var.admin_image_name
+    image_name = var.client_image_name
     flavor_name = var.admin_flavor_name
     key_pair = var.key_pair
     config_drive = true
@@ -194,7 +196,7 @@ resource "openstack_networking_port_v2" "exporter" {
 
 }
 
-resource "openstack_networking_port_v2" "nfs" {
+resource "openstack_networking_port_v2" "exporter_nfs" {
   
   name = "lustre-exporter-nfs"
   network_id = data.openstack_networking_network_v2.exporter_net.id
@@ -210,7 +212,7 @@ resource "openstack_networking_port_v2" "nfs" {
 resource "openstack_compute_instance_v2" "exporter" {
 
     name = "lustre-exporter"
-    image_name = var.exporter_image_name
+    image_name = var.client_image_name
     flavor_name = var.exporter_flavor_name
     key_pair = var.key_pair
     config_drive = true
@@ -222,7 +224,60 @@ resource "openstack_compute_instance_v2" "exporter" {
     }
 
     network {
-        port = openstack_networking_port_v2.nfs.id
+        port = openstack_networking_port_v2.exporter_nfs.id
+    }
+
+}
+
+resource "openstack_networking_port_v2" "csd3_client" {
+  
+  name = "lustre-csd-client"
+  network_id = data.openstack_networking_network_v2.lustre_net.id
+  admin_state_up = "true"
+
+  binding {
+    vnic_type = "direct"
+  }
+
+}
+
+resource "openstack_compute_instance_v2" "csd3_client" {
+
+    name = "lustre-csd3-client"
+    image_name = var.client_image_name
+    flavor_name = var.csd3_flavor_name
+    key_pair = var.key_pair
+    config_drive = true
+    security_groups = var.security_groups
+
+    network {
+      port = openstack_networking_port_v2.csd3_client.id
+      access_network = true
+    }
+
+}
+
+
+resource "openstack_networking_port_v2" "demo_nfs_client" {
+  
+  name = "demo-client"
+  network_id = data.openstack_networking_network_v2.exporter_net.id
+  admin_state_up = "true"
+
+}
+
+resource "openstack_compute_instance_v2" "demo_nfs_client" {
+
+    name = "demo-nfs-client"
+    image_name = var.client_image_name
+    flavor_name = var.demo_nfs_client_flavor_name
+    key_pair = var.key_pair
+    config_drive = true
+    security_groups = var.security_groups
+
+    network {
+      port = openstack_networking_port_v2.demo_nfs_client.id
+      access_network = true
     }
 
 }
@@ -234,6 +289,7 @@ resource "local_file" "hosts" {
       "admin" : openstack_compute_instance_v2.admin,
       "exporter" : openstack_compute_instance_v2.exporter,
       "csd3": openstack_compute_instance_v2.csd3_client,
+      "demo_nfs_client": openstack_compute_instance_v2.demo_nfs_client,
     },
   )
   filename = "${path.module}/../inventory/hosts"

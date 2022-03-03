@@ -28,7 +28,7 @@ prometheus_scrape_configs:
   file_sd_configs:
   - files:
     - "/etc/prometheus/file_sd/node.yml"
-  scrape_interval: 5s
+  scrape_interval: 1s
 - job_name: "lustre"
   file_sd_configs:
   - files:

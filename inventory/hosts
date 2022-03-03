@@ -1,19 +1,26 @@
 [all:vars]
 ansible_ssh_common_args= '-o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no'
 
-[server]
-lustre-server ansible_host=10.60.102.46 networks='{"WCDC-iLab-60":"10.60.102.46"}'
+[lustre_server]
+lustre-server ansible_host=10.60.102.17 networks='{"WCDC-iLab-60":"10.60.102.17"}'
 
-[admin]
-lustre-admin ansible_host=10.60.102.244 networks='{"WCDC-iLab-60":"10.60.102.244"}'
+[lustre_admin]
+lustre-admin ansible_host=10.60.102.242 networks='{"WCDC-iLab-60":"10.60.102.242"}'
 
-[exporters]
-lustre-exporter ansible_host=10.60.102.118 networks='{"WCDC-iLab-60":"10.60.102.118","portal-internal":"192.168.3.4"}'
+[lustre_exporters]
+lustre-exporter ansible_host=10.60.102.175 networks='{"WCDC-iLab-60":"10.60.102.175","portal-internal":"192.168.3.4"}'
 
-[csd3]
-lustre-csd3-client ansible_host=10.60.102.193 networks='{"WCDC-iLab-60":"10.60.102.193"}'
+[lustre_csd3]
+lustre-csd3-client ansible_host=10.60.102.39 networks='{"WCDC-iLab-60":"10.60.102.39"}'
 
-[clients:children]
-admin
-exporters
-csd3
+[nfs_clients]
+demo-nfs-client ansible_host=192.168.3.129 networks='{"portal-internal":"192.168.3.129"}'
+
+[lustre_clients:children]
+lustre_admin
+lustre_exporters
+lustre_csd3
+
+[lustre:children]
+lustre_server
+lustre_clients

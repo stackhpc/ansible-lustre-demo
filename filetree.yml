@@ -4,8 +4,8 @@
   loop:
     - path: /mnt/lustre/tenants
       state: directory
-      owner: "{{ ansible_user }}"
-      group: "{{ ansible_user }}"
+      owner: root
+      group: root
     - path: /mnt/lustre/tenants/srcp-foo
       state: directory
       owner: "{{ ansible_user }}"
@@ -16,26 +16,26 @@
       group: "{{ ansible_user }}"
     - path: /mnt/lustre/csd3
       state: directory
-      owner: "{{ ansible_user }}"
-      group: "{{ ansible_user }}"
+      owner: root
+      group: root
     - path: /mnt/lustre/csd3/project
       state: directory
-      owner: "{{ ansible_user }}"
-      group: "{{ ansible_user }}"
-    - path: /mnt/lustre/csd3/project/baz # <- this is what Portal VMs will mount over NFS
-      state: directory
       owner: root
-      group: rocky
+      group: root
+    - path: /mnt/lustre/csd3/project/baz # <- this is what demo-nfs-client mounts over NFS
+      state: directory
+      owner: bazowner
+      group: bazowner
       mode: ug=rx,o=
     - path: /mnt/lustre/csd3/project/baz/readwrite
       state: directory
-      owner: root
-      group: rocky
+      owner: bazowner
+      group: bazowner
       mode: ug=rwx,o=
     - path: /mnt/lustre/csd3/project/baz/readonly
       state: directory
-      owner: root
-      group: rocky
+      owner: bazowner
+      group: bazowner
       mode: ug=rx,o=
     - path: /mnt/lustre/csd3/project/qux
       state: directory
@@ -44,7 +44,9 @@
 - name: Create example NFS-exported read-only file
   copy:
     dest: /mnt/lustre/csd3/project/baz/readonly/readme.txt
-    content: hello world!
-    owner: bazowner
-    group: bazmember
+    content: |
+      hello world!
+
+    owner: baz1
+    group: bazowner
     mode: ugo=r
