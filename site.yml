@@ -100,6 +100,19 @@
         - UP mdt
         - UP ost
 
+    - name: Check user/group upcall cache time
+      shell:
+        cmd: lctl get_param -R mdt.*.identity_expire
+      changed_when: false
+      register: lctl_param_identity_expire
+
+    - name: Reduce caching of user/group upcalls (for development)
+      shell:
+        cmd: "lctl set_param mdt.*.identity_expire={{ lustre_identity_expire }}" # 1s rather than default 20 minutes
+      when: "('=' + lustre_identity_expire | string ) not in lctl_param_identity_expire.stdout"
+      vars:
+        lustre_identity_expire: 1
+
 - hosts: lustre_clients
   tags:
     - lustre_clients
