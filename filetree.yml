@@ -26,17 +26,17 @@
       state: directory
       owner: proj12
       group: proj12
-      mode: ug=rwx,+t
+      mode: ug=rwx,o=,+t
     - path: /mnt/lustre/csd3/project/proj12/readwrite
       state: directory
       owner: proj12
       group: proj12
-      mode: ug=rwx,+t
+      mode: ug=rwx,o=,+t
     - path: /mnt/lustre/csd3/project/proj12/readonly
       state: directory
       owner: proj12
       group: proj12
-      mode: ug=rx,+t
+      mode: ug=rx,o=,+t
     - path: /mnt/lustre/csd3/project/proj4
       state: directory
       owner: "{{ ansible_user }}"
