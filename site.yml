@@ -19,8 +19,8 @@
   become: yes
   tasks:
     - name: Create users
-      ansible.builtin.user: "{{ item }}"
-      loop: "{{ users }}"
+      ansible.builtin.user: "{{ item.value | combine({'name': item.key}) }}"
+      loop: "{{ users | dict2items }}"
 
 - hosts: lustre_server
   tags: lustre_server
@@ -219,6 +219,7 @@
   tags: tree
   gather_facts: no
   tasks:
-    - yum:
+    - name: install tree package
+      yum:
         name: tree
 

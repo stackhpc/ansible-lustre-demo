@@ -28,21 +28,21 @@ lustre_nodemaps:
     ranges:
       - start_nid: "{{ lustre_admin_nids | first }}" # TODO: not sure NIDS will sort right here
         end_nid: "{{ lustre_admin_nids | last }}"
-  
-  - name: portal
-    admin_nodemap: false # squashes root
-    trusted_nodemap: false # cannot see real gid/uid
-    ranges:
-      - start_nid: "{{ lustre_portal_nids | first }}"
-        end_nid: "{{ lustre_portal_nids | last }}"
-    squash_uid: 99 # nobody
-    squash_gid: 10100 # bazowner
-    fileset: /csd3/project/baz
-  
-  - name: csd3
+
+  - name: csd3 # equivalent to client1 from vss work
     admin_nodemap: false
     trusted_nodemap: true # so can see real gids/uids
     ranges:
       - start_nid: "{{ lustre_csd3_nids | first }}"
         end_nid: "{{ lustre_csd3_nids | last }}"
     fileset: /csd3
+
+  - name: exporter # equivalent to client2 from vss but without root being mapped to owner
+    admin_nodemap: false # squashes root
+    trusted_nodemap: false # cannot see real gid/uid
+    ranges:
+      - start_nid: "{{ lustre_portal_nids | first }}"
+        end_nid: "{{ lustre_portal_nids | last }}"
+    squash_uid: "{{ users['proj12-member'].uid }}"
+    squash_gid: "{{ users['proj12'].uid }}"
+    fileset: /csd3/project/proj12

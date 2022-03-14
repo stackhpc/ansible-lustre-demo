@@ -1,9 +1,24 @@
-users:
-  - name: bazowner
-    uid: 10100
-  - name: baz1
-    uid: 10101
-    groups: bazowner
-  - name: baz2
-    uid: 10102
-    groups: bazowner
+users: # key here -> ansible.builtin.user:name, contents -> any other parameter from ansible.builtin.user
+  proj12:
+    uid: 1100
+    groups: []
+  proj12-member:
+    uid: 1101
+    groups: []
+  
+  # csd3 users:
+  alex:
+    uid: 1102
+    groups: [proj12]
+  andy:
+    uid: 1103
+    groups: [proj12]
+  
+  # exporter users:
+  becky:
+    uid: 2108 # NB unlike vss this doesn't clash with alex as also in ldap!
+    groups: [proj12]
+    
+  ben:
+    uid: 2109
+    groups: [proj12]

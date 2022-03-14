@@ -22,31 +22,29 @@
       state: directory
       owner: root
       group: root
-    - path: /mnt/lustre/csd3/project/baz # <- this is what demo-nfs-client mounts over NFS
+    - path: /mnt/lustre/csd3/project/proj12 # <- this is what demo-nfs-client mounts over NFS
       state: directory
-      owner: bazowner
-      group: bazowner
-      mode: ug=rx,o=
-    - path: /mnt/lustre/csd3/project/baz/readwrite
+      owner: proj12
+      group: proj12
+      mode: ug=rwx,+t
+    - path: /mnt/lustre/csd3/project/proj12/readwrite
       state: directory
-      owner: bazowner
-      group: bazowner
-      mode: ug=rwx,o=
-    - path: /mnt/lustre/csd3/project/baz/readonly
+      owner: proj12
+      group: proj12
+      mode: ug=rwx,+t
+    - path: /mnt/lustre/csd3/project/proj12/readonly
       state: directory
-      owner: bazowner
-      group: bazowner
-      mode: ug=rx,o=
-    - path: /mnt/lustre/csd3/project/qux
+      owner: proj12
+      group: proj12
+      mode: ug=rx,+t
+    - path: /mnt/lustre/csd3/project/proj4
       state: directory
       owner: "{{ ansible_user }}"
       group: "{{ ansible_user }}"
 - name: Create example NFS-exported read-only file
   copy:
-    dest: /mnt/lustre/csd3/project/baz/readonly/readme.txt
+    dest: /mnt/lustre/csd3/project/proj12/readonly/readme.txt
     content: |
       hello world!
-
-    owner: baz1
-    group: bazowner
-    mode: ug=r
+    owner: proj12
+    group: proj12
