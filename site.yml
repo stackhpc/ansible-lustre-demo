@@ -194,7 +194,7 @@
             server: true
             clients: false
         nfs_export: "{{ lustre_mount_dir }}"
-        nfs_export_options: rw,insecure #,root_squash,all_squash,anongid=10102
+        nfs_export_options: "rw,insecure,root_squash,all_squash,anonuid={{ users['proj12-member'].uid }},anongid={{ users['proj12'].uid }}"
 
 - hosts: nfs_clients
   tags:
