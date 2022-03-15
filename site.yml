@@ -187,7 +187,8 @@
     - filetree
   become: yes
   tasks:
-    - import_role:
+    - name: Re-export Lustre
+      import_role:
         name: ansible-role-cluster-nfs
       vars:
         nfs_enable:
