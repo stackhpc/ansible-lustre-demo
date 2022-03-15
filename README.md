@@ -73,14 +73,14 @@ Access control is implemented using Lustre's [nodemap functionality](http://doc.
     
     However to get group permissions, unprivileged client users (e.g. `becky` and `ben`) must also be members of the `proj12` group. It is not clear why this is necessary, given the group squashing. It is not necessary for the `proj12-member` user they are squashed to to be a member of the `proj12` group.
 
-    This client also acts as an NFS server configured (in the "Re-export Lustre" play in [site.yml]()) to export the `/mnt/lustre` directory (which as above is actually the `/csd3/project/proj12/` directory on this client). This NFS export uses the options:
+    This client also acts as an NFS server configured (in the "Re-export Lustre" play in [site.yml]()) to export the `/mnt/lustre` directory, which as above is actually the `/csd3/project/proj12/` directory on this client. This NFS export uses the options:
 
     - `root_squash`
     - `all_squash`
     - `anonuid` set to the `proj12-member` uid
     - `anongid` set to the `proj12` gid
 
-    (note the gid and uid squashing mirrors the nodemap for the "exporter" Lustre client on the same instance).
+    Note the gid and uid squashing mirrors the nodemap for the "exporter" Lustre client on the same instance.
 
     The effect is that when an NFS client mounts this NFS export, all its users (including `root`) only have group permissions on this directory. Unusually the NFS squashing configuration acts to *provide* permissions in this case; without it any NFS client users would have to have a secondary group with an id matching that of the `proj12` LDAP user in order to access the mount.
 
