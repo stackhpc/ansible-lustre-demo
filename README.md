@@ -47,7 +47,7 @@ The lustre server and all Lustre clients are assumed to be on LDAP, and therefor
 - `proj12`: The owner for the `/csd3/project/proj12` directory.
 - `proj12-member`: A non-owning user for that directory.
 - `alex`, `andy`: Example `csd3` users, with secondary group `proj12`.
-- `becky`, `ben`: Example `proj12` users for the isolated Lustre client (the "exporter"), with secondary group proj12.
+- `becky`, `ben`: Example `proj12` users for the isolated Lustre client (the "exporter"), with secondary group `proj12`.
 
 # Access control
 
@@ -69,7 +69,7 @@ Access control is implemented using Lustre's [nodemap functionality](http://doc.
     - `squash_uid` is set to the id for `proj12-member`, which does *not* own the directory.
     - `squash_gid` is set to the id for `proj12`, the directory owner.
     
-    As the owner and group of the `/csd3/project/proj12/` directory are both actually `proj12`, this means that any user on client can get at most group permissions on this directory[^3]. As the squashing is done on server side, on this client neither `root`, the `proj12` user (which is the actual owner) nor the `proj12-member` user (which appears to be the owner from this client) actually has owner permissions.
+    As the owner and group of the `/csd3/project/proj12/` directory are both actually `proj12`, this means that any user on this client can get at most group permissions on this directory[^3]. As the squashing is performed on the server side, on this client neither `root`, the `proj12` user (which is the actual owner) nor the `proj12-member` user (which appears to be the owner from this client) actually has owner permissions.
     
     However to get group permissions, unprivileged client users (e.g. `becky` and `ben`) must also be members of the `proj12` group. It is not clear why this is necessary, given the group squashing. It is not necessary for the `proj12-member` user they are squashed to to be a member of the `proj12` group.
 
@@ -146,12 +146,12 @@ terraform init
 # Create and configure infrastructure
 
 1. Ensure the following are available on OpenStack:
-- A keypair with private key on the deployment host.
-- Infrastructure and images as described above.
+    - A keypair with private key on the deployment host.
+    - Infrastructure and images as described above.
 
 1. Ensure Openstack credentials are available (e.g. download and source `openrc.sh` file).
 
-1. Review the variables defined in `terraform/main.tf` and `terraform/csd3.tf` and modify as appropriate, then run terraform to create the infrastructure:
+1. Review the variables defined in `terraform/main.tf` and modify as appropriate, then run terraform to create the infrastructure:
 
     ```
     cd terraform/
@@ -166,7 +166,7 @@ terraform init
 
     - The automatic NID range generation in [inventory/group_vars/lustre_server/server.yml]() is not general-purpose and may need adapting for other client configurations.
 
-1. Run ansible to install and configure Lustre servers/clients and NFS server:
+1. Run ansible to install and configure Lustre servers, Lustre clients, NFS server and NFS client:
     
     ```
     ansible-playbook site.yml
@@ -184,7 +184,7 @@ terraform init
 # Utility playbooks and scripts:
 
 - `reimage.yml`: Revert nodes to their original image. Useful during development.
-- `ansible-ssh`: Login to a node using ansible information (e.g. user) - pass `--host <inventory_hostname>` to select node.
+- `ansible-ssh`: Login to a node using Ansible inventory information (e.g. user) - pass `--host <inventory_hostname>` to select node.
 
 While the manual says nodemap changes propagate in ~10 seconds, previous work found it was necessary to unmount and remount the filesystem to get changes to apply, although this was nearly instantaneous and proved robust. All the Lustre and NFS clients can be unmounted in the correct order using:
 
