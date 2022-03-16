@@ -18,6 +18,7 @@ The concept here is that a client in an isolated tenancy can mount a selected po
 - Access is significantly easier, as it simply requires installing NFS packages and mounting from a known IP.
 - Without a Lustre client, there are no restrictions on kernel/OS versions.
 - It removes the need for the client to have uids/gids matching those on the server, which may be difficult to arrange for an isolated tenancy.
+- It enables access to the Lustre filesystem from Kubernetes pods, as there is currently no official [CSI driver](https://kubernetes-csi.github.io/docs/drivers.html) that allows Kubernetes to use the native Lustre client.
 
 All the Lustre client and server setup uses the `develop` brach of [ansible-role-lustre](https://github.com/stackhpc/ansible-role-lustre/tree/develop).
 
