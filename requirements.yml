@@ -2,6 +2,7 @@
 roles:
 - src: git+git@github.com:stackhpc/ansible-role-lustre.git
 - src: git+git@github.com:stackhpc/ansible-role-loopdev
+  version: develop
 - src: git+git@github.com:stackhpc/ansible-role-cluster-nfs
   version: feature/rdma
 - src: https://github.com/stackhpc/ansible-node-exporter.git
